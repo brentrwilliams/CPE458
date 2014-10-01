@@ -100,15 +100,64 @@ def getColumnText(keyIndex, cypherText, keyLen):
       columnText += cypherText[i]
    return columnText
 
+def getOccurence(text, letter):
+   numLetters = 0
+   for i in xrange(0, len(text)):
+      textletter = text[i]
+      if (textletter.isalpha()):
+         if textletter.lower() == letter:
+            numLetters += 1
+
+   return numLetters
+
+def getMostCommonChar(plaintext):
+   text = plaintext.lower()
+   charArray = [0] * 256
+   maxChar = 0
+   mostCommon = ''
+   for i in xrange(0, len(text)):
+      charArray[ord(text[i])] += 1
+      num = charArray[ord(text[i])]
+      if num > maxChar:
+         maxChar = num
+         mostCommon = text[i]
+
+   return mostCommon 
+
 def testByte(keyIndex, cypherText, keyLength):
    iocArray = 256 * [0.0]
+   maxEOccurence = 0
+   maxTOccurence = 0
+   maxAOccurence = 0
    for key in xrange(0, 256):
       columnText = getColumnText(keyIndex, cypherText, keyLength)
       xoredText = xor(columnText, chr(key))
+      if(getMostCommonChar(xoredText) == 'e'):
+         newEOccurence = getOccurence(xoredText, 'e')
+         if(newEOccurence > maxEOccurence):
+            bestKey = key
+            print "text(E): " + xoredText
+            maxEOccurence = newEOccurence
+      if(getMostCommonChar(xoredText) == 't'):
+         #if maxEOccurence == 0:
+         newTOccurence = getOccurence(xoredText, 't')
+         if(newTOccurence > maxTOccurence):
+            bestKey = key
+            print "text(T): " + xoredText
+            maxTOccurence = newTOccurence 
+
+      if(getMostCommonChar(xoredText) == 'a'):
+         #if maxEOccurence == 0:
+         newAOccurence = getOccurence(xoredText, 'a')
+         if(newAOccurence > maxAOccurence):
+            bestKey = key
+            print "text(A): " + xoredText
+            maxAOccurence = newAOccurence 
+   return bestKey
       #call indexOf Coincidence on testString
-      ioc = indexOfCoincidence26(xoredText)
-      iocArray[key] = ioc
-      print (str(key) + ': ' + str(ioc))
+      #ioc = indexOfCoincidence26(xoredText)
+      #iocArray[key] = ioc
+      #print (str(key) + ': ' + str(ioc))
 
    #find best key
    #return byte key
@@ -160,7 +209,12 @@ def taskIIC(fileName):
 
    print 'IOC of key:'
    #testByte(keyIndex, cypherText, keyLength):
-   testByte(0, cypherText, 5)
+   theKey = ""
+   for i in xrange(0, 5):
+      theKey += str(testByte(i, cypherText, 5))
+
+   print str(theKey)
+   print xor(cypherText, theKey)
 
    ###FOUND KEY LEN AS 5
    # key = ''
