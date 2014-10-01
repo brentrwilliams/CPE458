@@ -9,7 +9,7 @@ import string
 def main():
    '''with open(sys.argv[1]) as f:
       for line in f:
-        	print line
+         print line
    '''
    #taskIIB('Lab0.TaskII.B.txt')
    taskIIC('Lab0.TaskII.C.txt')
@@ -65,6 +65,8 @@ def indexOfCoincidence26(text):
          iocTextNums[chIndex] += 1
          iocTextLen += 1
 
+   if iocTextLen <= 1:
+      return 0.0
 
    iocSum = 0.0
    for count in iocTextNums:
@@ -92,6 +94,24 @@ def indexOfCoincidence256(text):
 
    return ioc * 26
 
+def getColumnText(keyIndex, cypherText, keyLen):
+   columnText = ''
+   for i in xrange(keyIndex, len(cypherText), keyLen):
+      columnText += cypherText[i]
+   return columnText
+
+def testByte(keyIndex, cypherText, keyLength):
+   iocArray = 256 * [0.0]
+   for key in xrange(0, 256):
+      columnText = getColumnText(keyIndex, cypherText, keyLength)
+      xoredText = xor(columnText, chr(key))
+      #call indexOf Coincidence on testString
+      ioc = indexOfCoincidence26(xoredText)
+      iocArray[key] = ioc
+      print (str(key) + ': ' + str(ioc))
+
+   #find best key
+   #return byte key
 
 def taskIIB(fileName):
 
@@ -124,32 +144,38 @@ def taskIIC(fileName):
    for keyLen in xrange(1, maxLineLen+1):
       iocSum = 0.0
       for keyIndex in xrange(0,keyLen):
-         columnText = ''
-         for i in xrange(keyIndex, len(cypherText), keyLen):
-            columnText += cypherText[i]
+         columnText = getColumnText(keyIndex, cypherText, keyLen)
+         # columnText = ''
+         # for i in xrange(keyIndex, len(cypherText), keyLen):
+         #    columnText += cypherText[i]
 
          ioc = indexOfCoincidence256(columnText)
          iocSum += ioc
 
       columnIoc.append(iocSum / keyLen)
 
+   print 'IOC of Key Length:'
    for i in xrange(0,maxLineLen):
       print(str(i+1) + ": " + str(columnIoc[i]))
 
+   print 'IOC of key:'
+   #testByte(keyIndex, cypherText, keyLength):
+   testByte(0, cypherText, 5)
+
    ###FOUND KEY LEN AS 5
-   key = ''
-   for key1 in xrange(0,256):
-      for key2 in xrange(0,256):
-         for key3 in xrange(0,256):
-            for key4 in xrange(0,256):
-               for key5 in xrange(0,256):
-                  key = str(key1) + str(key2) + str(key3) + str(key4) + str(key5)
-                  xoredLine = xor(cypherText, key)
-                  if all(c in string.printable for c in xoredLine):
-                     val = indexOfCoincidence26(xoredLine)
-                     if val < 0.068 and val > 0.062:
-                        print xoredLine
-                        print ("Key: " + str(key))
+   # key = ''
+   # for key1 in xrange(0,256):
+   #    for key2 in xrange(0,256):
+   #       for key3 in xrange(0,256):
+   #          for key4 in xrange(0,256):
+   #             for key5 in xrange(0,256):
+   #                key = str(key1) + str(key2) + str(key3) + str(key4) + str(key5)
+   #                xoredLine = xor(cypherText, key)
+   #                if all(c in string.printable for c in xoredLine):
+   #                   val = indexOfCoincidence26(xoredLine)
+   #                   if val < 0.068 and val > 0.062:
+   #                      print xoredLine
+   #                      print ("Key: " + str(key))
    
 if __name__ == '__main__':
    main()
