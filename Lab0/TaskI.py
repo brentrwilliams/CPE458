@@ -14,6 +14,33 @@ def main():
    #taskIIB('Lab0.TaskII.B.txt')
    taskIIC('Lab0.TaskII.C.txt')
 
+frequencyMap = {'a': 0.08167,
+                'b': 0.01492,
+                'c': 0.02782,
+                'd': 0.04253,
+                'e': 0.12072,
+                'f': 0.02228,
+                'g': 0.02015,
+                'h': 0.06094,
+                'i': 0.06966,
+                'j': 0.00153,
+                'k': 0.00772,
+                'l': 0.04025,
+                'm': 0.02406,
+                'n': 0.06749,
+                'o': 0.07507,
+                'p': 0.01929,
+                'q': 0.00095,
+                'r': 0.05987,
+                's': 0.06327,
+                't': 0.09056,
+                'u': 0.02758,
+                'v': 0.00978,
+                'w': 0.02630,
+                'x': 0.00150,
+                'y': 0.01974,
+                'z': 0.00074 
+               }
 
 def asciiToHex(text):
    return text.encode(encoding='hex', errors='strict')
@@ -124,41 +151,42 @@ def getMostCommonChar(plaintext):
 
    return mostCommon 
 
+def frequencyAnalysis(text):
+   total = 0
+   frequencyArray = [0] * 26
+   for i in xrange(0, len(text)):
+      char = text[i]
+      if(char.isalpha()):
+         lowerChar = char.lower()
+         chIndex = ord(char.lower()) - 97
+         frequencyArray[chIndex] += 1
+
+   for letter in xrange(0, 26):
+      asciiLetter = chr(letter + 97)
+      total += frequencyArray[letter] * frequencyMap[asciiLetter]
+
+   return total
+
 def testByte(keyIndex, cypherText, keyLength):
    iocArray = 256 * [0.0]
-   maxEOccurence = 0
-   maxTOccurence = 0
-   maxAOccurence = 0
+   keyList = []
+   bestKey = 0
+   maxCorellation = 0 
    for key in xrange(0, 256):
       columnText = getColumnText(keyIndex, cypherText, keyLength)
       xoredText = xor(columnText, chr(key))
-      if(getMostCommonChar(xoredText) == 'e'):
-         newEOccurence = getOccurence(xoredText, 'e')
-         if(newEOccurence > maxEOccurence):
-            bestKey = key
-            print "text(E): " + xoredText
-            maxEOccurence = newEOccurence
-      if(getMostCommonChar(xoredText) == 't'):
-         #if maxEOccurence == 0:
-         newTOccurence = getOccurence(xoredText, 't')
-         if(newTOccurence > maxTOccurence):
-            bestKey = key
-            print "text(T): " + xoredText
-            maxTOccurence = newTOccurence 
-
-      if(getMostCommonChar(xoredText) == 'a'):
-         #if maxEOccurence == 0:
-         newAOccurence = getOccurence(xoredText, 'a')
-         if(newAOccurence > maxAOccurence):
-            bestKey = key
-            print "text(A): " + xoredText
-            maxAOccurence = newAOccurence 
-   return bestKey
+      corolation = frequencyAnalysis(xoredText)
+      if corolation > maxCorellation:
+         maxCorellation = corolation
+         bestKey = key
       #call indexOf Coincidence on testString
       #ioc = indexOfCoincidence26(xoredText)
+      #if ioc > 0.6 && ioc < 0.7:
+       #  keyList.append(key)
+        # print key
       #iocArray[key] = ioc
-      #print (str(key) + ': ' + str(ioc))
-
+      
+   return key
    #find best key
    #return byte key
 
@@ -209,12 +237,13 @@ def taskIIC(fileName):
 
    print 'IOC of key:'
    #testByte(keyIndex, cypherText, keyLength):
+   listOfKeys = []
    theKey = ""
    for i in xrange(0, 5):
-      theKey += str(testByte(i, cypherText, 5))
+      theKey += chr(testByte(i, cypherText, 5))
 
-   print str(theKey)
-   print xor(cypherText, theKey)
+   
+   print xor(cypherText, str(theKey))
 
    ###FOUND KEY LEN AS 5
    # key = ''
