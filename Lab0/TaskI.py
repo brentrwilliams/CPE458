@@ -11,8 +11,9 @@ def main():
       for line in f:
          print line
    '''
-   #taskIIB('Lab0.TaskII.B.txt')
+   taskIIB('Lab0.TaskII.B.txt')
    taskIIC('Lab0.TaskII.C.txt')
+   taskIID('Lab0.TaskII.D.txt')
 
 frequencyMap = {'a': 0.08167,
                 'b': 0.01492,
@@ -191,8 +192,34 @@ def testByte(keyIndex, cypherText, keyLength):
    #find best key
    #return byte key
 
-def taskIIB(fileName):
+def vigenere(text, key):
+  newText = ""
+  for i in xrange(0, len(text)):
+    char = text[i]
+    keyInd = i % len(key)
+    keyChar = key[keyInd]
+    newText += chr((ord(char.lower()) - ord(keyChar.lower()))%26 + 97)
+  return newText
 
+def testByteVigenere(keyIndex, cypherText, keyLength):
+   iocArray = 256 * [0.0]
+   keyList = []
+   bestKey = 0
+   maxCorellation = 0 
+   for key in xrange(97, 123):
+      columnText = getColumnText(keyIndex, cypherText, keyLength)
+      decodedText = vigenere(columnText, chr(key))
+      corolation = frequencyAnalysis(decodedText)
+      if corolation > maxCorellation:
+         maxCorellation = corolation
+         bestKey = key
+         #print maxCorellation
+   
+   return bestKey
+
+
+def taskIIB(fileName):
+   print "\n\n\n\nPartB\n"
    for key in xrange(0,256):
       #print chr(key)
       with open(fileName) as f:
@@ -206,6 +233,7 @@ def taskIIB(fileName):
                   print ("IOC: " + str(val))
 
 def taskIIC(fileName):
+   print "\n\n\n\nPartC\n"
    maxLineLen = 10
    with open(fileName) as f:
       cypherText = ''
@@ -213,54 +241,70 @@ def taskIIC(fileName):
          cypherTextLine = base64ToAscii(line.strip())
          cypherText += cypherTextLine
 
-         #if len(cypherTextLine) > maxLineLen:
-         #   maxLineLen = len(cypherTextLine)
-
-   print ("maxLineLen: " + str(maxLineLen))
    columnIoc = []
 
    for keyLen in xrange(1, maxLineLen+1):
       iocSum = 0.0
       for keyIndex in xrange(0,keyLen):
          columnText = getColumnText(keyIndex, cypherText, keyLen)
-         # columnText = ''
-         # for i in xrange(keyIndex, len(cypherText), keyLen):
-         #    columnText += cypherText[i]
 
          ioc = indexOfCoincidence256(columnText)
          iocSum += ioc
 
       columnIoc.append(iocSum / keyLen)
 
-   print 'IOC of Key Length:'
+   keyLen = 0
+   maxDiff = 1000 #arbitrary large difference, definitely expecting lower
    for i in xrange(0,maxLineLen):
-      print(str(i+1) + ": " + str(columnIoc[i]))
+     diff = abs(1.73 - columnIoc[i])
+     if diff < maxDiff:
+       maxDiff = diff
+       keyLen = i + 1
 
-   print 'IOC of key:'
-   #testByte(keyIndex, cypherText, keyLength):
    listOfKeys = []
    theKey = ""
-   for i in xrange(0, 5):
-      theKey += chr(testByte(i, cypherText, 5))
+   for i in xrange(0, keyLen):
+      theKey += chr(testByte(i, cypherText, keyLen))
 
    
-   print xor(cypherText, str(theKey))
+   print xor(cypherText, str(theKey)).lower()
 
-   ###FOUND KEY LEN AS 5
-   # key = ''
-   # for key1 in xrange(0,256):
-   #    for key2 in xrange(0,256):
-   #       for key3 in xrange(0,256):
-   #          for key4 in xrange(0,256):
-   #             for key5 in xrange(0,256):
-   #                key = str(key1) + str(key2) + str(key3) + str(key4) + str(key5)
-   #                xoredLine = xor(cypherText, key)
-   #                if all(c in string.printable for c in xoredLine):
-   #                   val = indexOfCoincidence26(xoredLine)
-   #                   if val < 0.068 and val > 0.062:
-   #                      print xoredLine
-   #                      print ("Key: " + str(key))
-   
+def taskIID(fileName):
+  print "\n\n\n\nPartD\n"
+  maxLineLen = 20
+  with open(fileName) as f:
+      cypherText = ''
+      for line in f:
+        cypherText += line
+
+  columnIoc = []
+
+  for keyLen in xrange(1, maxLineLen+1):
+    iocSum = 0.0
+    for keyIndex in xrange(0,keyLen):
+       columnText = getColumnText(keyIndex, cypherText, keyLen)
+
+       ioc = indexOfCoincidence256(columnText)
+       iocSum += ioc
+
+    columnIoc.append(iocSum / keyLen)
+
+  keyLen = 0
+  maxDiff = 1000 #arbitrary large difference, definitely expecting lower
+  for i in xrange(0,maxLineLen):
+    diff = abs(1.73 - columnIoc[i])
+    if diff < maxDiff:
+      maxDiff = diff
+      keyLen = i + 1
+
+  theKey = ""
+  for i in xrange(0, keyLen):
+    theKey += chr(testByteVigenere(i, cypherText, keyLen))
+  
+  print vigenere(cypherText, str(theKey)) 
+
+
+
 if __name__ == '__main__':
    main()
 
