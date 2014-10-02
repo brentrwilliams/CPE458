@@ -122,7 +122,7 @@ def indexOfCoincidence256(text):
    return ioc * 26
 
 def getColumnText(keyIndex, cypherText, keyLen):
-   columnText = ''
+   columnText = ""
    for i in xrange(keyIndex, len(cypherText), keyLen):
       columnText += cypherText[i]
    return columnText
@@ -154,11 +154,12 @@ def getMostCommonChar(plaintext):
 def frequencyAnalysis(text):
    total = 0
    frequencyArray = [0] * 26
+   #if all(c in string.printable for c in text):
    for i in xrange(0, len(text)):
       char = text[i]
       if(char.isalpha()):
          lowerChar = char.lower()
-         chIndex = ord(char.lower()) - 97
+         chIndex = ord(lowerChar) - 97
          frequencyArray[chIndex] += 1
 
    for letter in xrange(0, 26):
@@ -185,8 +186,8 @@ def testByte(keyIndex, cypherText, keyLength):
        #  keyList.append(key)
         # print key
       #iocArray[key] = ioc
-      
-   return key
+   
+   return bestKey
    #find best key
    #return byte key
 
