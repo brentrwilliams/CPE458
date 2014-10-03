@@ -128,30 +128,6 @@ def getColumnText(keyIndex, cypherText, keyLen):
       columnText += cypherText[i]
    return columnText
 
-def getOccurence(text, letter):
-   numLetters = 0
-   for i in xrange(0, len(text)):
-      textletter = text[i]
-      if (textletter.isalpha()):
-         if textletter.lower() == letter:
-            numLetters += 1
-
-   return numLetters
-
-def getMostCommonChar(plaintext):
-   text = plaintext.lower()
-   charArray = [0] * 256
-   maxChar = 0
-   mostCommon = ''
-   for i in xrange(0, len(text)):
-      charArray[ord(text[i])] += 1
-      num = charArray[ord(text[i])]
-      if num > maxChar:
-         maxChar = num
-         mostCommon = text[i]
-
-   return mostCommon 
-
 def frequencyAnalysis(text):
    total = 0
    otherChars = 0

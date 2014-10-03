@@ -128,30 +128,6 @@ def getColumnText(keyIndex, cypherText, keyLen):
       columnText += cypherText[i]
    return columnText
 
-def getOccurence(text, letter):
-   numLetters = 0
-   for i in xrange(0, len(text)):
-      textletter = text[i]
-      if (textletter.isalpha()):
-         if textletter.lower() == letter:
-            numLetters += 1
-
-   return numLetters
-
-def getMostCommonChar(plaintext):
-   text = plaintext.lower()
-   charArray = [0] * 256
-   maxChar = 0
-   mostCommon = ''
-   for i in xrange(0, len(text)):
-      charArray[ord(text[i])] += 1
-      num = charArray[ord(text[i])]
-      if num > maxChar:
-         maxChar = num
-         mostCommon = text[i]
-
-   return mostCommon 
-
 def frequencyAnalysis(text):
    total = 0
    otherChars = 0
@@ -272,7 +248,7 @@ def taskIIC(fileName):
    for i in xrange(0, keyLen):
       theKey += chr(testByte(i, cypherText, keyLen))
 
-   
+   print "key: " + asciiToHex(theKey)    
    print xor(cypherText, str(theKey)).lower()
 
 def taskIID(fileName):
@@ -307,6 +283,7 @@ def taskIID(fileName):
   for i in xrange(0, keyLen):
     theKey += chr(testByteVigenere(i, cypherText, keyLen))
   
+  print "key: " + theKey
   print vigenere(cypherText, str(theKey)) 
 
 
