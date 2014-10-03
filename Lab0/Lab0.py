@@ -132,7 +132,7 @@ def frequencyAnalysis(text):
    total = 0
    otherChars = 0
    frequencyArray = [0] * 26
-   #if all(c in string.printable for c in text):
+   
    for i in xrange(0, len(text)):
       char = text[i]
       if(char.isalpha()):
@@ -163,16 +163,8 @@ def testByte(keyIndex, cypherText, keyLength):
       if corolation > maxCorellation:
          maxCorellation = corolation
          bestKey = key
-      #call indexOf Coincidence on testString
-      #ioc = indexOfCoincidence26(xoredText)
-      #if ioc > 0.6 && ioc < 0.7:
-       #  keyList.append(key)
-        # print key
-      #iocArray[key] = ioc
    
    return bestKey
-   #find best key
-   #return byte key
 
 def vigenere(text, key):
   newText = ""
@@ -195,7 +187,6 @@ def testByteVigenere(keyIndex, cypherText, keyLength):
       if corolation > maxCorellation:
          maxCorellation = corolation
          bestKey = key
-         #print maxCorellation
    
    return bestKey
 
@@ -248,7 +239,7 @@ def taskIIC(fileName):
    for i in xrange(0, keyLen):
       theKey += chr(testByte(i, cypherText, keyLen))
 
-   
+   print "key: " + asciiToHex(theKey)    
    print xor(cypherText, str(theKey)).lower()
 
 def taskIID(fileName):
@@ -283,6 +274,7 @@ def taskIID(fileName):
   for i in xrange(0, keyLen):
     theKey += chr(testByteVigenere(i, cypherText, keyLen))
   
+  print "key: " + theKey
   print vigenere(cypherText, str(theKey)) 
 
 
