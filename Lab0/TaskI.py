@@ -154,6 +154,7 @@ def getMostCommonChar(plaintext):
 
 def frequencyAnalysis(text):
    total = 0
+   otherChars = 0
    frequencyArray = [0] * 26
    #if all(c in string.printable for c in text):
    for i in xrange(0, len(text)):
@@ -162,12 +163,17 @@ def frequencyAnalysis(text):
          lowerChar = char.lower()
          chIndex = ord(lowerChar) - 97
          frequencyArray[chIndex] += 1
+      else:
+        if char == ' ' or char == ',' or char == '.' or char == '\'' or char == '\n':
+          otherChars += 1
+        else:
+          otherChars -= 1
 
    for letter in xrange(0, 26):
       asciiLetter = chr(letter + 97)
       total += frequencyArray[letter] * frequencyMap[asciiLetter]
 
-   return total
+   return total + otherChars
 
 def testByte(keyIndex, cypherText, keyLength):
    iocArray = 256 * [0.0]
