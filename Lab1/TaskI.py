@@ -3,7 +3,7 @@
 import random
 import time
 from MersenneTwister import MersenneTwister
-from CryptoUtils import intToBase64
+from CryptoUtils import asciiToBase64
 
 def oracle(randNum):
    print 'Searching for seed...'
@@ -17,7 +17,7 @@ def oracle(randNum):
       retVal = mt.extract_number()
 
       if retVal == randNum:
-         return intToBase64(i)
+         return asciiToBase64(str(i))
 
    print 'Error: Could not find seed'
    return ''
@@ -42,7 +42,7 @@ def main():
    randNum = mt.extract_number()
 
    print '\tFound Seed:\t' + oracle(randNum)
-   print '\tActual Seed:\t' + intToBase64(seed)
+   print '\tActual Seed:\t' + asciiToBase64(str(seed))
 
 
 if __name__ == '__main__':
