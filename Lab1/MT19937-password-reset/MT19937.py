@@ -25,7 +25,17 @@ class MT19937:
       self.index = (self.index + 1) % 624
       return y
 
-   def generate_number(self):
+   def unmix(self):
+      y = self.MT[self.index]
+      y = y ^ (y >> 18)
+      y = y ^ ((y << 15) & 4022730752)
+      y = y ^ ((y << 7) & 2636928640)
+      y = y ^ (y >> 11)
+
+      return y
+
+
+   def generate_numbers(self):
       for i in range(1,624):
          y = (self.MT[i] & 0x80000000) + (self.MT[(i+1) % 624] & 0x7fffffff)
 
