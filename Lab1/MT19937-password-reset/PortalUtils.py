@@ -7,6 +7,7 @@ import time
 import subprocess
 from CryptoUtils import base64ToAscii, asciiToBase64
 from MT19937 import MT19937
+import string
 
 
 def start_server():
@@ -32,6 +33,7 @@ def register():
    print ''
 
 def reset_admin_token():
+   print 'Resetting admin token'
    data = {
            'user' : 'admin',
            'Reset' : '',
@@ -41,7 +43,7 @@ def reset_admin_token():
    content = urllib2.urlopen("http://localhost:8080/forgot",
            encoded_data)
 
-   print "done resetting admin token"
+   print 'Done resetting admin token'
 
 def get_token():
    data = {
@@ -119,14 +121,15 @@ def main():
    newToken = ":".join(tokenArray)
    newToken = asciiToBase64(newToken)
    reset_admin_token()
-   print "http://localhost:8080/reset?token=" + newToken
-   #print get_token() 
 
-   while True:
-      time.sleep(2)
-   #print 'randomNumbers: ' + str(randomNumbers)
-   #print 'len(randomNumbers): ' + str(len(randomNumbers))
-   #p.terminate()
+   website = "http://localhost:8080/reset?token=" + newToken
+   website = website.translate(None, string.whitespace)
+
+   subprocess.Popen(['open', website], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+   raw_input()
+
+   p.terminate()
 
 
 if __name__ == '__main__':
