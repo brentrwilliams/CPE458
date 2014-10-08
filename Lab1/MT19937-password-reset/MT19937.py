@@ -14,7 +14,7 @@ class MT19937:
       # Extract a tempered pseudorandom number based on the index-th value,
       # calling generate_numbers() every 624 numbers
       if self.index == 0:
-         self.generate_number()
+         self.generate_numbers()
 
       y = self.MT[self.index]
       y = y ^ (y >> 11)
@@ -23,15 +23,6 @@ class MT19937:
       y = y ^ (y >> 18)
 
       self.index = (self.index + 1) % 624
-      return y
-
-   def unmix(self):
-      y = self.MT[self.index]
-      y = y ^ (y >> 18)
-      y = y ^ ((y << 15) & 4022730752)
-      y = y ^ ((y << 7) & 2636928640)
-      y = y ^ (y >> 11)
-
       return y
 
 
