@@ -1,0 +1,50 @@
+# NOTE ALL OF THESE ARE IN HEX!!!
+Instructions:
+make the username end in admin so that on the end of the block it is encrypted the same as if you were the admin. Most likely it will be:
+user=mmmmmmadmin
+
+
+8ca768cc77dd6c782970f409f88803660f074e25700eb306c9891b23d03c76fd brent
+ba6c2c0809db12f1fce58f7a73e172dfb88334691d68abb5f34e1a0bb39dca17 cat
+fbb0ba7ad4b193d2b0e4e4e561a5bb79db8f14da399a3c9aabab5a02f056b610 john
+ae0d40bd3556c0761cd8ddea40328d2998f44f13306bc3b909cd6f747314d76b6f69e937cf11503c3a3afe7c9dd0c35bbd2753d9107bc6bcaac24b0f1e546daa0caec2fd29576a6e68aea19f0c4cd5f263ab3a770da9f592b458ba1a8d19268ce2fb02f195b6a860932b0fc56373e47ef5241c40f8cbe58ce3c666b5431e8fa80f074e25700eb306c9891b23d03c76fd HelloMyNameIsBrentAndILikeCookiesDoYouLikeCookiesMyFavoriteCookieIsSnickerdoodleCookiesILoveToEatThemButTheyMakeMeFat
+59df33e26a44817b4846afa31d83921900b345c091cdced63b5bb1350cc50c66c9252ef9150e266edb91f88fc3a064bb6ae9f752dd26c04e5a785a3f30e4b0aaec7275f4c63346ce568fc31c16d6d0a9c634f1926b3b807a6c04681a1b721afdde4506191271cf7816287462b0d52c4ee19b7bae6540e4b8bd207d6b507ff8b287496e93820872fbb9bb6864dd2fe374 HelloMyNameIsBrentAndILikeCookiesDoYouLikeCookiesMyFavoriteCookieIsSnickerdoodleCookiesILoveToEatThemButTheyMakeMeFaty
+
+
+20963c162c912a4479dd5db13f0138a52e2e0bdcc1fd7d5351ed4ebca5948dfe1ad334cefbae0d0953dd4462eef91e81 mmmmmmadmin
+686d538569735938363fbc9493fef54302e66f9631d89a12369b42720a172f771ad334cefbae0d0953dd4462eef91e81 mmmmmadmin
+
+e2761c00a6b5e8fc8f4ebf2706b0e213af76a475c2eb2e388e7f33977dc43385 brent1
+2b1090852528bbe45be3c635ba524340dd473f27130a89facfb7b64da6d4f6bf brent12
+f8108ac4418716fc11f90d9f8de52ccec829c436f5a2c0cd82087131bc32a66f brent123
+86df334c6c76b9cc21dea56a0f3c816d782e6934dd2799f8f2faf0fc96257322 brent1234   
+ac75f873cdc275990f6bbd139049189a3f199f3cab998ffdb6a298fc77225364 brent12345
+7718be312073ef085d4a514dac5fe6246dc54c6fa2cb8b9a81cf36fd2700cc6f brentbren
+4e55994e648128359a9723e102b0c67cc10d7b8e789b4273f83a91c60697266f brentbre
+
+
+
+dbefb66bec72c7fd0a49c666ab8b17dc2e417d5fffd0ab7b184e481c5782278b5b93b05e50864163368ccb65ace5f043 brent123456
+
+686d538569735938363fbc9493fef564
+ u s e r = m m m m m a d m i n 0
+
+ bc9493fef564
+  a d m i n 0
+
+user=USERNAME&uid=UID&role=ROLE
+
+
+                                                    bc9493fef564
+                                                     a d m i n 1
+
+4e55994e648128359a9723e102b0c67cc10d7b8e789b4273f83abc9493fef56f
+
+86df334c6c76b9cc21dea56a0f3c816d782e6934dd2799f8f2faf0fc96257322
+ u s e r = b r e n t 1 2 3 4 & u i d = # # r o l e = u s e r 2 2
+
+86df334c6c76b9cc21dea56a0f3c816d782e6934dd2799f8f2fabc9493fef564
+ u s e r = b r e n t 1 2 3 4 & u i d = # # r o l e = a d m i n 1
+
+ac75f873cdc275990f6bbd139049189a3f199f3cab998ffdb6a298b13f0138a51ad334cefbae0d0953dd4462eef91e81
+ u s e r = b r e n t 1 2 3 4 5 & u i d = # # r o l e = a d m i n16161616161616161616161616161616
