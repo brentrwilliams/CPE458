@@ -58,12 +58,14 @@ def cbc_encrypt(plaintext, key, iv):
 
    blockSize = len(key)
 
-   firstBlock = padded_plaintext[0:blockSize]
+   #firstBlock = padded_plaintext[0:blockSize]
    totalCtext = ""
-   ctext = cipher.encrypt(xor(firstBlock, iv))
+   #ctext = cipher.encrypt(xor(firstBlock, iv))
+   ctext = iv
    totalCtext += ctext
 
-   for i in xrange(blockSize, len(padded_plaintext), blockSize):
+
+   for i in xrange(0, len(padded_plaintext), blockSize):
       block = padded_plaintext[i:i+blockSize]
       ctext = cipher.encrypt(xor(block, ctext))
       totalCtext += ctext
@@ -79,8 +81,8 @@ def cbc_decrypt(ciphertext, key, iv):
 
    ctext = ascii_ciphertext[0:blockSize]
    totalPtext = ""
-   ptext = xor(cipher.decrypt(ctext), iv)
-   totalPtext += ptext
+   #ptext = xor(cipher.decrypt(ctext), iv)
+   #totalPtext += ptext
 
    for i in xrange(blockSize, len(ascii_ciphertext), blockSize):
       block = ascii_ciphertext[i:i+blockSize]
