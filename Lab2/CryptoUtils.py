@@ -17,3 +17,23 @@ def base64ToHex(text):
 
 def hexToBase64(text):
    return asciiToBase64(hexToAscii(text))
+
+def xor(plaintext, key):
+   textLen = len(plaintext);
+   keyLen = len(key);
+   newString = "";
+
+   for i in range(0, textLen):
+      keyChar = key[i % keyLen];
+      textChar = plaintext[i];
+      
+      keyInt = ord(keyChar);
+      textInt = ord(textChar);
+      
+      newInt = keyInt ^ textInt;
+      newChar = chr(newInt);
+
+      newString += newChar;
+
+
+   return newString

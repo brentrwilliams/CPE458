@@ -1,6 +1,6 @@
 
 from Crypto.Cipher import AES
-from CryptoUtils import base64ToAscii, asciiToBase64, hexToAscii, asciiToHex
+from CryptoUtils import base64ToAscii, asciiToBase64, hexToAscii, asciiToHex, xor
 import struct
 
 class InvalidTextOrKeyLengthException(Exception):
@@ -41,7 +41,7 @@ def unpad(keyLength, plaintext):
 def ecb_encrypt(key, plaintext):
    padded_plaintext = pad(len(key),  plaintext)
    cipher = AES.new(key)
-   ciphertext = cipher.encrypt()
+   ciphertext = cipher.encrypt(padded_plaintext)
    return asciiToBase64(ciphertext)
 
 
@@ -50,6 +50,45 @@ def ecb_decrypt(key, ciphertext):
    cipher = AES.new(key)
    padded_plaintext = cipher.decrypt(ascii_ciphertext)
    return unpad(len(key), padded_plaintext)
+
+def cbc_encrypt(plaintext, key, iv):
+   padded_plaintext = pad(len(key), plaintext)
+   cipher = AES.new(key)
+   numBlocks = padded_plaintext/len(key)
+
+   blockSize = len(key)
+
+   firstBlock = padded_plaintext[0:blockSize]
+   totalCtext = ""
+   ctext = cipher.encrypt(xor(firstBlock, iv))
+   totalCtext += ctext
+
+   for i in xrange(blockSize, len(padded_plaintext), blockSize):
+      block = padded_plaintext[i:i+blockSize]
+      ctext = cipher.encrypt(xor(block, ctext))
+      totalCtext += ctext
+
+
+   return asciiToBase64(totalCtext)
+
+def cbc_decrypt(ciphertext, key, iv):
+   ascii_ciphertext = base64ToAscii(ciphertext)
+   cipher = AES.new(key)
+
+   blockSize = len(key)
+
+   ctext = ascii_ciphertext[0:blockSize]
+   totalPtext = ""
+   ptext = xor(cipher.decrypt(ctext), iv)
+   totalPtext += ptext
+
+   for i in xrange(blockSize, len(ascii_ciphertext), blockSize):
+      block = ascii_ciphertext[i:i+blockSize]
+      ptext = xor(cipher.decrypt(block), ctext)
+      totalPtext += ptext
+      ctext = block
+
+   return unpad(len(key), totalPtext)
 
 
 def read_ciphertext_file(filename):
@@ -207,10 +246,23 @@ def taskIIC():
    print 'Final Cookie: ' + block1 + new_block2 + block3
    print ''
 
+def taskIIIA():
+   print 'TaskIIIA: \n'
+   filename = 'Lab2.TaskIII.A.txt'
+   ciphertext = ''
+   with open(filename) as f:
+      for line in f:
+         ciphertext += line.strip()
+   
+   plaintext = cbc_decrypt(ciphertext, 'MIND ON MY MONEY', 'MONEY ON MY MIND')
+   print plaintext
+
+
 def main():
    #taskIIA()
    #taskIIB()
-   taskIIC()
+   #taskIIC()
+   taskIIIA()
 
 
 if __name__ == '__main__':
