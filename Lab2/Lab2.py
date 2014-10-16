@@ -1,7 +1,8 @@
 
 from Crypto.Cipher import AES
-from CryptoUtils import base64ToAscii, asciiToBase64, hexToAscii, asciiToHex, xor
+from CryptoUtils import base64ToAscii, asciiToBase64, hexToAscii, asciiToHex, xor, base64ToHex, hexToBase64
 import struct
+import crypto
 
 class InvalidTextOrKeyLengthException(Exception):
    def __init__(self, details):
@@ -52,10 +53,9 @@ def ecb_decrypt(key, ciphertext):
    return unpad(len(key), padded_plaintext)
 
 def cbc_encrypt(plaintext, key, iv):
-   padded_plaintext = pad(len(key), plaintext)
+   #padded_plaintext = pad(len(key), plaintext)
+   padded_plaintext = crypto.ansix923_pad(plaintext,len(key))
    cipher = AES.new(key)
-   numBlocks = padded_plaintext/len(key)
-
    blockSize = len(key)
 
    #firstBlock = padded_plaintext[0:blockSize]
@@ -70,6 +70,7 @@ def cbc_encrypt(plaintext, key, iv):
       ctext = cipher.encrypt(xor(block, ctext))
       totalCtext += ctext
 
+   print len(totalCtext)
 
    return asciiToBase64(totalCtext)
 
@@ -84,14 +85,19 @@ def cbc_decrypt(ciphertext, key, iv):
    #ptext = xor(cipher.decrypt(ctext), iv)
    #totalPtext += ptext
 
+   print blockSize
+   print len(ascii_ciphertext)
+
    for i in xrange(blockSize, len(ascii_ciphertext), blockSize):
       block = ascii_ciphertext[i:i+blockSize]
+      print len(block)
       ptext = xor(cipher.decrypt(block), ctext)
       totalPtext += ptext
       ctext = block
 
-   return unpad(len(key), totalPtext)
-
+   #return unpad(len(key), totalPtext)
+   #return crypto.ansix923_strip(totalPtext,len(key))
+   return totalPtext
 
 def read_ciphertext_file(filename):
    ciphertext = ''
@@ -259,12 +265,59 @@ def taskIIIA():
    plaintext = cbc_decrypt(ciphertext, 'MIND ON MY MONEY', 'MONEY ON MY MIND')
    print plaintext
 
+def get_to_xor():
+   user_line = [0,0,0,0,0,0,0,117, 115, 101, 114, 0, 0, 0, 0, 0, 6]
+   admin_line = [0,0,0,0,0,0,0,97, 100, 109, 105, 110, 0, 0, 0, 0, 5]
+   xor_line_ascii = ''
+
+   for i in xrange(0,len(user_line)):
+      xor_line_ascii += (chr(user_line[i] ^ admin_line[i]))
+
+
+
+   # xor_line = asciiToHex(xor_line_ascii)
+
+   # print xor_line
+   return xor_line_ascii
 
 def main():
    #taskIIA()
    #taskIIB()
    #taskIIC()
-   taskIIIA()
+   #taskIIIA()
+
+   encrypted_text_base64 = cbc_encrypt( ('user=brent123456' + '7890123456&uid=#' + ' &role=user'), '1234567890123456', '1234567890123456' )
+   
+   hex_encrypted_text = base64ToHex(encrypted_text_base64)
+
+   to_xor = get_to_xor()
+
+   block = hex_encrypted_text[64:96]
+   ascii_block = hexToAscii(block)
+
+   xored_block = xor(ascii_block, to_xor)
+
+   xored_block_hex = asciiToHex(xored_block)
+
+   print xored_block_hex
+
+   new_encrypted_text_hex = hex_encrypted_text[:64] + xored_block_hex + hex_encrypted_text[96:]
+
+   new_encrypted_text_base64 = hexToBase64(new_encrypted_text_hex)
+
+   new_plaintext = cbc_decrypt(new_encrypted_text_base64, '1234567890123456', '1234567890123456')
+   
+   for i in xrange(0,len(new_plaintext), 16):
+      print new_plaintext[i:i+16]
+   #print new_plaintext
+
+   # to_xor = get_to_xor()
+   # block = '4cc039576382375e20d5e373375e04df'
+   # ascii_block = hexToAscii(block)   
+   # xored_block = xor(ascii_block, to_xor)
+   # xored_block_hex = asciiToHex(xored_block)
+   # print xored_block_hex
+
 
 
 if __name__ == '__main__':
