@@ -289,6 +289,12 @@ def getNewBlock(orig, to_xor):
 
    print asciiToHex(xored_ascii)
 
+def ecbCookie(cookie1, cookie2):
+
+   newCookie = cookie1[:64] + cookie2[32:]
+
+   print newCookie
+
 
 def taskIIIB(ciphertext):
 
@@ -314,8 +320,7 @@ def main():
    #taskIIA()
    #taskIIB()
    #taskIIC()
-   #taskIIIA()
-
+   taskIIIA()
 
 
 if __name__ == '__main__':
