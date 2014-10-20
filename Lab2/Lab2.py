@@ -280,43 +280,41 @@ def get_to_xor():
    # print xor_line
    return xor_line_ascii
 
+def getNewBlock(orig, to_xor):
+
+   ascii_orig = hexToAscii(orig)
+   ascii_xor = hexToAscii(to_xor)
+
+   xored_ascii = xor(ascii_orig, ascii_xor)
+
+   print asciiToHex(xored_ascii)
+
+
+def taskIIIB(ciphertext):
+
+   string1 = '\0' + '\0' '\0' + '\0' + '\0' + '\0' + '\0' + '\0' + '\0' + '\0' + '\0' + "23456"
+   string2 = '\0' + '\0' '\0' + '\0' + '\0' + '\0' + '\0' + '\0' + '\0' + '\0' + '\0' + "&uid="
+
+   iv_xor = xor(string1, string2)
+   cipherIv = hexToAscii(ciphertext[:32])
+   newCipherIV = asciiToHex(xor(iv_xor, cipherIv))
+
+   string3 = '\0' + '\0' + '\0' + '\0' + '\0' + '\0' + "user" + '\0' + '\0' + '\0' + '\0' + '\0' + chr(0x6)
+   string4 = '\0' + '\0' + '\0' + '\0' + '\0' + '\0' + "admin" + '\0' + '\0' + '\0' + '\0' + chr(0x5)
+
+   block_xor = xor(string3, string4)
+   cipherBlock = hexToAscii(ciphertext[64:96])
+   newCipherBlock = asciiToHex(xor(block_xor, cipherBlock))
+
+   newCipherText = newCipherIV + ciphertext[32:64] + newCipherBlock + ciphertext[96:]
+
+   print newCipherText
+
 def main():
    #taskIIA()
    #taskIIB()
    #taskIIC()
    #taskIIIA()
-
-   encrypted_text_base64 = cbc_encrypt( ('user=brent123456' + '7890123456&uid=#' + ' &role=user'), '1234567890123456', '1234567890123456' )
-   
-   hex_encrypted_text = base64ToHex(encrypted_text_base64)
-
-   to_xor = get_to_xor()
-
-   block = hex_encrypted_text[64:96]
-   ascii_block = hexToAscii(block)
-
-   xored_block = xor(ascii_block, to_xor)
-
-   xored_block_hex = asciiToHex(xored_block)
-
-   print xored_block_hex
-
-   new_encrypted_text_hex = hex_encrypted_text[:64] + xored_block_hex + hex_encrypted_text[96:]
-
-   new_encrypted_text_base64 = hexToBase64(new_encrypted_text_hex)
-
-   new_plaintext = cbc_decrypt(new_encrypted_text_base64, '1234567890123456', '1234567890123456')
-   
-   for i in xrange(0,len(new_plaintext), 16):
-      print new_plaintext[i:i+16]
-   #print new_plaintext
-
-   # to_xor = get_to_xor()
-   # block = '4cc039576382375e20d5e373375e04df'
-   # ascii_block = hexToAscii(block)   
-   # xored_block = xor(ascii_block, to_xor)
-   # xored_block_hex = asciiToHex(xored_block)
-   # print xored_block_hex
 
 
 
