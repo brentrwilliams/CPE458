@@ -15,6 +15,12 @@ def start_server():
    print ''
    return p
 
+def stop_server(server):
+   print 'Stopping Server...'
+   server.terminate()
+   time.sleep(1) # make sure it doesn't leave the server as a zombie process
+   print 'Server Stopped...'
+
 def get_ciphertext():
    resp = urllib2.urlopen('http://0.0.0.0:8080/eavesdrop')
    page = resp.read()
@@ -35,15 +41,12 @@ def findI2(ciphertext):
 
 
 def main():
-   p = start_server()
+   server = start_server()
 
    print get_ciphertext()
 
    raw_input() # Wait to stop the server
-   print 'Stopping Server...'
-   p.terminate()
-   time.sleep(1) # make sure it doesn't leave the server as a zombie process
-   print 'Server Stopped...'
+   stop_server(server)
 
 
 if __name__ == '__main__':
