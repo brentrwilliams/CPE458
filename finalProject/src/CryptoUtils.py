@@ -26,7 +26,7 @@ class LetterFrequencies(object):
          self.letter_frequency_percentages[char] = float(self.letter_frequencies[char]) / self.num_letters
 
    def __getitem__(self, index):
-      return self.letter_frequency_percentages[index]
+      return self.letter_frequencies[index]
 
    def __repr__(self):
       return str(self.letter_frequency_percentages)
@@ -45,15 +45,21 @@ class LetterFrequencies(object):
       return chi_squared_val
       
 
-def main():
-   text = '''Most of the production will take place in Montreal, where the studio is currently ramping up its feature animation team to work on Charming and subsequent productions. These first films will allow us to build infrastructure, a team, pipeline and so on, says Butler. It will help us make the feature animation studio we want to be. At the same time, were also going to start to go out and develop our own scripts for our movies. And theyll be ones we own more of going forward.
-          In terms of animation style, Butler plans to maintain a visual effects quality to the work. Were very ambitious about the quality, he says. I want to capitalize on the high production values we instituted on Beans and then keep it in the box. In VFX you typically have to be a lot more agile, but I learnt my craft at Disney and I feel like we can manage them in a similar way. We want to be successful  make good looking films and make more than one.
-          Cinesite will continue to work in visual effects  upcoming projects include The Man From U.N.C.L.E. and San Andreas, for example  but this work will run alongside animated features. Id love to do a feature length version of Beans, admits Butler when asked about future plans, who also notes that the studio also plans on accepting scripts and developing ideas for films.'''
+def index_of_coincidence(text):
+   letter_freqs = LetterFrequencies(text)
+   alphabet = "abcdefghijklmnopqrstuvwxyz"
+   sum_val = 0.0
+   for char in alphabet:
+      freq = letter_freqs[char]
+      sum_val += freq * (freq - 1)
 
-   print len(text)
-   let_freqs = LetterFrequencies(text)
-   print let_freqs
-   print let_freqs.chi_squared()
+   N = letter_freqs.num_letters
+   return sum_val / (N * (N - 1))
+
+
+def main():
+   text = 'Defend the east wall of the castle'
+   print index_of_coincidence(text)
 
 if __name__ == '__main__':
    main()
