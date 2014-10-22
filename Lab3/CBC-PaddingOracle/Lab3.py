@@ -53,45 +53,60 @@ def findPlain(ciphertext):
 
    for blockInd in xrange(numBlocks - 1, 0, -1):
       c2Ind = blockInd * 32 
-      c2 = ciphertext[c1Ind : c1Ind + 32]
-      c1 = c2Ind - 32
+      c2 = ciphertext[c2Ind : c2Ind + 32]
+      c1Ind = c2Ind - 32
       c1 = ciphertext[c1Ind: c2Ind]
       i2 = ''
 
-      for bytInd in xrange(15, -1, -1):
-         c1Tail = ''
-         numTrailingBytes = 15 - bytInd
+      for byteInd in xrange(15, -1, -1):
+         plaintextTail = ''
+         numTrailingBytes = 15 - byteInd
 
          for l in xrange(0, numTrailingBytes):
-            c1Tail += two_space_hex( hex(numTrailingBytes + 1) )
+            plaintextTail += two_space_hex( hex(numTrailingBytes + 1) )
+            print 'l:' + str(l)
 
-         c1Tail = asciiToHex(xor(hexToAscii(hexc1Tail), hexToAscii(i2)))
+         c1Tail = asciiToHex(xor(hexToAscii(plaintextTail), hexToAscii(i2)))
 
          for k in xrange(0, 256):
-            
+            print 'k: ' + str(k)
             c1Prime = c1[0:byteInd*2] + two_space_hex( hex(k) ) + c1Tail
             newCipher = c1Prime + c2
             
-            if check_ciphertext(newCipher):
+            print 'a'
+            ciphertext_good = check_ciphertext(newCipher)
+            print 'b'
+
+            if ciphertext_good:
+               print 'found ' + str(byteInd)
                nextInterByte = two_space_hex(hex(k ^ (numTrailingBytes + 1)))
                i2 = nextInterByte + i2
+               break
 
       newPlain = xor( hexToAscii(c1), hexToAscii(i2))
-
+      print newPlain
       plainText = newPlain + plainText
+
+   print plainText
+   return plainText
 
 
 def check_ciphertext(ciphertext):
    result = False
 
    try:
-      resp = urllib2.urlopen("http://0.0.0.0:8080/?enc=" + ciphertext)
+      print len(ciphertext)
+      print ciphertext
+      resp = urllib2.urlopen("http://0.0.0.0:8080/?enc=" + ciphertext, timeout=2)
    except Exception, e:
-      
+      print 'after'
       if str(e) == 'HTTP Error 404: Not Found':
          result = True
       elif str(e) == 'HTTP Error 403: Forbidden':
          result = False
+      elif str(e) == 'timed out':
+         print 'Recursing...'
+         result = check_ciphertext(ciphertext)
       else:
          raise e
 
@@ -104,8 +119,9 @@ def main():
    ciphertext = get_ciphertext()
    print ciphertext
 
-   print check_ciphertext(ciphertext)
+   findPlain(ciphertext)  
 
+   print 'Waiting...'
    raw_input() # Wait to stop the server
    stop_server(server)
 

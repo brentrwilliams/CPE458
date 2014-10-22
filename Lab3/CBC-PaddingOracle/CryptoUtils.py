@@ -16,7 +16,7 @@ def base64ToHex(text):
    return asciiToHex(base64ToAscii(text))
 
 def hexToBase64(text):
-   return asciiToBase64(hexToAscii(text
+   return asciiToBase64(hexToAscii(text))
 
 def xor(plaintext, key):
    textLen = len(plaintext);
