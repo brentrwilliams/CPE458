@@ -70,8 +70,6 @@ def cbc_encrypt(plaintext, key, iv):
       ctext = cipher.encrypt(xor(block, ctext))
       totalCtext += ctext
 
-   print len(totalCtext)
-
    return asciiToBase64(totalCtext)
 
 def cbc_decrypt(ciphertext, key, iv):
@@ -85,12 +83,8 @@ def cbc_decrypt(ciphertext, key, iv):
    #ptext = xor(cipher.decrypt(ctext), iv)
    #totalPtext += ptext
 
-   print blockSize
-   print len(ascii_ciphertext)
-
    for i in xrange(blockSize, len(ascii_ciphertext), blockSize):
       block = ascii_ciphertext[i:i+blockSize]
-      print len(block)
       ptext = xor(cipher.decrypt(block), ctext)
       totalPtext += ptext
       ctext = block
@@ -317,9 +311,9 @@ def taskIIIB(ciphertext):
    print newCipherText
 
 def main():
-   #taskIIA()
-   #taskIIB()
-   #taskIIC()
+   taskIIA()
+   taskIIB()
+   taskIIC()
    taskIIIA()
 
 
