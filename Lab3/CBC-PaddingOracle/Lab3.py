@@ -4,7 +4,7 @@ import urllib2
 import re
 import time
 import subprocess
-from CryptoUtils import xor 
+from CryptoUtils import xor, hexToAscii, asciiToHex 
 
 I2 = []
 
@@ -37,6 +37,13 @@ def get_ciphertext():
 
    return ciphertext
 
+def two_space_hex(hex_str):
+   if len(hex_str) == 3:
+      return '0' + hex_str[2]
+   else:
+      return hex_str[2:]
+
+
 def findPlain(ciphertext):
 
    plainText = ''
@@ -44,7 +51,7 @@ def findPlain(ciphertext):
    numBytes = cipherLen / 2
    numBlocks = numBytes / 16
 
-   for blockInd in xrange(numBlocks - 1, -1, -1):
+   for blockInd in xrange(numBlocks - 1, 0, -1):
       c2Ind = blockInd * 32 
       c2 = ciphertext[c1Ind : c1Ind + 32]
       c1 = c2Ind - 32
@@ -56,20 +63,20 @@ def findPlain(ciphertext):
          numTrailingBytes = 15 - bytInd
 
          for l in xrange(0, numTrailingBytes):
-            c1Tail += hex(numTrailingBytes + 1)
+            c1Tail += two_space_hex( hex(numTrailingBytes + 1) )
 
-         c1Tail = xor(c1Tail, i2)
+         c1Tail = asciiToHex(xor(hexToAscii(hexc1Tail), hexToAscii(i2)))
 
          for k in xrange(0, 256):
             
-            c1Prime = c1[0:byteInd*2] + hex(k) + c1Tail
+            c1Prime = c1[0:byteInd*2] + two_space_hex( hex(k) ) + c1Tail
             newCipher = c1Prime + c2
             
             if check_ciphertext(newCipher):
-               nextInterByte = k ^ (numTrailingBytes + 1)
+               nextInterByte = two_space_hex(hex(k ^ (numTrailingBytes + 1)))
                i2 = nextInterByte + i2
 
-      newPlain = xor(c1, i2)
+      newPlain = xor( hexToAscii(c1), hexToAscii(i2))
 
       plainText = newPlain + plainText
 
