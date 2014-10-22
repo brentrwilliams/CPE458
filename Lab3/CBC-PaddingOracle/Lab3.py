@@ -5,6 +5,8 @@ import re
 import time
 import subprocess
 
+I2 = []
+
 def start_server():
    print 'Starting Server...'
    p = subprocess.Popen(['python', 'server.py'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -25,6 +27,12 @@ def get_ciphertext():
    ciphertext = found.group(1).strip()
 
    return ciphertext
+
+def findI2(ciphertext):
+
+   numBytes = len(ciphertext) / 2
+
+
 
 def main():
    p = start_server()
