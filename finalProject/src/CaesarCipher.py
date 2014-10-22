@@ -1,4 +1,4 @@
-from CryptoUtils import IOC
+from CryptoUtils import LetterFrequencies
 
 def encrypt(plaintext, key):
    '''
@@ -39,21 +39,19 @@ def crack(ciphertext):
    decrypt a ciphertext encrypted with a caesar cipher and an unknown key
    ciphertext is the ciphertext in ASCII
    '''
-   best_key = 0
-   best_percentage = 0.0
+   letter_frequencies = LetterFrequencies(ciphertext)
+   best_chi_squared = letter_frequencies.chi_squared()
    best_plaintext = ciphertext
    
-   for key in xrange(0,26):
+   for key in xrange(1,26):
       possible_plaintext = decrypt(ciphertext, key)
-      ioc = IOC(possible_plaintext)
-      percentage = ioc.within_percent(0.333)
-      print str(key) + ": " + str(percentage)
-      # print possible_plaintext
-      # print ''
-      if percentage > best_percentage:
-         best_percentage = percentage
+      letter_frequencies = LetterFrequencies(possible_plaintext)
+      chi_squared = letter_frequencies.chi_squared()
+      print chi_squared
+      
+      if chi_squared < best_chi_squared:
+         best_chi_squared = chi_squared
          best_plaintext = possible_plaintext
-         best_key = key
 
    return best_plaintext
 
