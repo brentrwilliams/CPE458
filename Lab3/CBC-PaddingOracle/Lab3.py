@@ -34,9 +34,42 @@ def get_ciphertext():
 
    return ciphertext
 
-def findI2(ciphertext):
+def findPlain(ciphertext):
 
-   numBytes = len(ciphertext) / 2
+   plainText = ''
+   cipherLen = len(ciphertext)
+   numBytes = cipherLen / 2
+   numBlocks = numBytes / 16
+
+   for blockInd in xrange(numBlocks - 1, -1, -1):
+      c2Ind = blockInd * 32 
+      c2 = ciphertext[c1Ind : c1Ind + 32]
+      c1 = c2Ind - 32
+      c1 = ciphertext[c1Ind: c2Ind]
+      i2 = ''
+
+      for bytInd in xrange(15, -1, -1):
+         c1Tail = ''
+         numTrailingBytes = 15 - bytInd
+
+         for l in xrange(0, numTrailingBytes):
+            c1Tail += hex(numTrailingBytes + 1)
+
+         c1Tail = xor(c1Tail, i2)
+
+         for k in xrange(0, 256):
+            
+            c1Prime = c1[0:byteInd*2] + hex(k) + c1Tail
+            newCipher = c1Prime + c2
+            
+            if check_ciphertext(newCipher):
+               nextInterByte = k ^ (numTrailingBytes + 1)
+               i2 = nextInterByte + i2
+
+      newPlain = xor(c1, i2)
+
+      plainText = newPlain + plainText
+
 
 
 
