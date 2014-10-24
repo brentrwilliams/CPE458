@@ -64,21 +64,21 @@ def findPlain(ciphertext):
 
          for l in xrange(0, numTrailingBytes):
             plaintextTail += two_space_hex( hex(numTrailingBytes + 1) )
-            print 'l:' + str(l)
+            #print 'l:' + str(l)
 
          c1Tail = asciiToHex(xor(hexToAscii(plaintextTail), hexToAscii(i2)))
 
          for k in xrange(0, 256):
-            print 'k: ' + str(k)
+            #print 'k: ' + str(k)
             c1Prime = c1[0:byteInd*2] + two_space_hex( hex(k) ) + c1Tail
             newCipher = c1Prime + c2
             
-            print 'a'
+            #print 'a'
             ciphertext_good = check_ciphertext(newCipher)
-            print 'b'
+            #print 'b'
 
             if ciphertext_good:
-               print 'found ' + str(byteInd)
+               #print 'found ' + str(byteInd)
                nextInterByte = two_space_hex(hex(k ^ (numTrailingBytes + 1)))
                i2 = nextInterByte + i2
                break
@@ -95,11 +95,11 @@ def check_ciphertext(ciphertext):
    result = False
 
    try:
-      print len(ciphertext)
-      print ciphertext
+      #print len(ciphertext)
+      #print ciphertext
       resp = urllib2.urlopen("http://0.0.0.0:8080/?enc=" + ciphertext, timeout=2)
    except Exception, e:
-      print 'after'
+      #print 'after'
       if str(e) == 'HTTP Error 404: Not Found':
          result = True
       elif str(e) == 'HTTP Error 403: Forbidden':
@@ -114,7 +114,7 @@ def check_ciphertext(ciphertext):
 
 
 def main():
-   server = start_server()
+   #server = start_server()
 
    ciphertext = get_ciphertext()
    print ciphertext
@@ -123,7 +123,7 @@ def main():
 
    print 'Waiting...'
    raw_input() # Wait to stop the server
-   stop_server(server)
+   #stop_server(server)
 
 
 if __name__ == '__main__':
