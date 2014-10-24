@@ -27,6 +27,19 @@ def SHA1(message):
    # append 0 ≤ k < 512 bits '0', thus the resulting message length (in bits)
    #    is congruent to 448 (mod 512)
    # append ml, in a 64-bit big-endian integer. So now the message length is a multiple of 512 bits.
+   while (len(message) * 8) % 512 != 448:
+      message += b'\x00'
+
+   message += orig_message_bit_len
+
+   for chunkInd in xrange(0, len(message), 64):
+      chunk = message[chunkInd:chunkInd+64]
+      words = []
+      for i in xrange(0, len(chunk), 4):
+         words.append(chunk[i:i+4])
+
+      for i in xrange(16, 79):
+         words[i] = xor(xor(xor(words[i - 3], words[i - 8]), words[i - 14]), words[i - 16])
 
 
 
