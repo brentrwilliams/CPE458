@@ -1,5 +1,12 @@
 
 
+def char_to_index(char):
+   return ord(char.lower()) - ord('a')
+
+def index_to_char(index):
+   alphabet = "abcdefghijklmnopqrstuvwxyz"
+   return alphabet[index % 26]
+
 class LetterFrequencies(object):
    '''docstring for LetterFrequencies'''
    def __init__(self, text):

@@ -1,4 +1,4 @@
-from CryptoUtils import LetterFrequencies
+from CryptoUtils import LetterFrequencies, index_to_char, char_to_index
 
 def encrypt(plaintext, key):
    '''
@@ -32,6 +32,24 @@ def decrypt(ciphertext, key):
          plaintext += char
 
    return plaintext
+
+
+def get_best_key(ciphertext):
+   letter_frequencies = LetterFrequencies(ciphertext)
+   best_chi_squared = letter_frequencies.chi_squared()
+   best_key = 1
+   
+   for key in xrange(1,26):
+      possible_plaintext = decrypt(ciphertext, key)
+      letter_frequencies = LetterFrequencies(possible_plaintext)
+      chi_squared = letter_frequencies.chi_squared()
+      print str(index_to_char(key)) + ': ' + str(chi_squared)
+      
+      if chi_squared < best_chi_squared:
+         best_chi_squared = chi_squared
+         best_key = key
+
+   return best_key
 
 
 def crack(ciphertext):

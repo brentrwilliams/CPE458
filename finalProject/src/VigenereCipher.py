@@ -1,11 +1,6 @@
-from CryptoUtils import LetterFrequencies, index_of_coincidence
-
-def char_to_index(char):
-   return ord(char.lower()) - ord('a')
-
-def index_to_char(index):
-   alphabet = "abcdefghijklmnopqrstuvwxyz"
-   return alphabet[index % 26]
+from CryptoUtils import LetterFrequencies, index_of_coincidence, index_to_char, char_to_index
+import math
+import CaesarCipher
 
 def create_tableau():
    alphabet = "abcdefghijklmnopqrstuvwxyz"
@@ -62,27 +57,70 @@ def decrypt(ciphertext, key):
    return plaintext
 
 
+def get_periods(ciphertext):
+   '''
+   Returns all the significant periods sorted in ascending order by period
+   '''
+   stripped_ciphertext = [char.lower() for char in ciphertext if char.isalpha()]
+   period_iocs = []
+   for period in range(2,27):
+      sum_ioc = 0.0
+      for index in range(0,period):
+         text = ''.join([stripped_ciphertext[i] for i in range(0+index, len(stripped_ciphertext), period)])
+         ioc = index_of_coincidence(text)
+         sum_ioc += ioc
+
+      average_ioc = sum_ioc / period
+      period_iocs.append(average_ioc)
+
+   # Calculate the standard of deviation
+   sum_val = sum(period_iocs)
+   num_iocs = len(period_iocs)
+   average_ioc = sum_val / num_iocs 
+
+   sum_square_diff = 0
+   for ioc in period_iocs:
+      sum_square_diff += ((ioc - average_ioc) ** 2)
+
+   standard_dev = math.sqrt(sum_square_diff / num_iocs)
+
+   # Record any ioc more than 2 standard devs away as significant
+   significant_periods = []
+   i = 2
+
+   for ioc in period_iocs:
+      if ioc > (average_ioc + (2 * standard_dev) ): 
+         significant_periods.append(i)
+      i += 1
+
+   # Sort by smallest period
+   significant_periods.sort()
+
+   return significant_periods
+
+
 def crack(ciphertext):
    '''
    decrypt a ciphertext encrypted with a caesar cipher and an unknown key
    ciphertext is the ciphertext in ASCII
    '''
    best_plaintext = ''
+
+   periods = get_periods(ciphertext)
+   print periods
+
+   period = periods[0]
    stripped_ciphertext = [char.lower() for char in ciphertext if char.isalpha()]
-   for period in range(2,27):
-      sum_ioc = 0.0
-      for index in range(0,period):
-         text = ''.join([stripped_ciphertext[i] for i in range(0+index, len(stripped_ciphertext), period)])
-         #print text
-         ioc = index_of_coincidence(text)
-         #print ioc
-         sum_ioc += ioc
+   key = ''
+   for index in range(0,period):
+      text = ''.join([stripped_ciphertext[i] for i in range(0+index, len(stripped_ciphertext), period)])
+      print text
+      key += index_to_char( CaesarCipher.get_best_key(text) )
 
-      average_ioc = sum_ioc / period
-      print str(period) + ': ' + str(average_ioc)
-
+   print key
 
    return best_plaintext
+
 
 
 def main():
