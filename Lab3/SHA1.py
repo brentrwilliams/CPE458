@@ -118,13 +118,35 @@ def integer_to_char_list(num):
       num = num >> 8
    return text
 
+def test_SHA1():
+   print 'Testing SHA1...'
 
+   tests = [('abc', 'a9993e364706816aba3e25717850c26c9cd0d89d'), 
+            ('', 'da39a3ee5e6b4b0d3255bfef95601890afd80709'),
+            ('abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq', '84983e441c3bd26ebaae4aa1f95129e5e54670f1'),
+            ('abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu', 'a49b2446a02c645bf419f995b67091253a04a259'),
+            ('a'*1000000, '34aa973cd4c4daa4f61eeb2bdbad27316534016f')
+           ]
+   i = 1
+   for input_val, output_val in tests:
+      out = SHA1(input_val)
+      expected_out_int = int(('0x' + output_val), 16)
+      if out == expected_out_int:
+         print 'Passed test ' + str(i)
+      else:
+         print 'Failed test ' + str(i)
+
+      i += 1
+
+def taskIIB():
+   # Collision at (28992493371179L, ';^\x94\x02', '\x98\x05e\x02')
+   a = ''.join(list(bin(SHA1(';^\x94\x02')))[-50:])
+   b = ''.join(list(bin(SHA1('\x98\x05e\x02')))[-50:])
+   print str(list(';^\x94\x02')) + ':   ' + a
+   print str(list('\x98\x05e\x02')) + ':' + b
 
 def main():
-   print find_collision()
-   # (28992493371179L, ';^\x94\x02', '\x98\x05e\x02')
-   #print SHA1('')
-
+   taskIIB()
 
 
 if __name__ == '__main__':
