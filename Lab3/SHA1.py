@@ -12,7 +12,6 @@ def SHA1(message):
    Note 2: All constants in this pseudo code are in big endian.
            Within each word, the most significant byte is stored in the leftmost byte position
    '''
-   sha1val = 0
 
    h0 = 0x67452301
    h1 = 0xEFCDAB89
@@ -46,7 +45,6 @@ def SHA1(message):
       for i in xrange(0, len(chunk), 4):
          words.append(struct.unpack(b'>I', chunk[i:i+4])[0])
 
-      print len(words)
       # Extend the sixteen 32-bit words into eighty 32-bit words:
       for i in xrange(16, 80):
          words.append(circular_shift_left( words[i - 3] ^ words[i - 8] ^ words[i - 14] ^ words[i - 16], 1 ))
@@ -88,13 +86,46 @@ def SHA1(message):
       h2 = (h2 + c) & 0xffffffff
       h3 = (h3 + d) & 0xffffffff
       h4 = (h4 + e) & 0xffffffff
-    
-   # Produce the final hash value (big-endian):
-   return '%08x%08x%08x%08x%08x' % (h0, h1, h2, h3, h4)
+   
+   #print ('%08x %08x %08x %08x %08x' % (h0, h1, h2, h3, h4))
+   return  int( ('0x' + ('%08x%08x%08x%08x%08x' % (h0, h1, h2, h3, h4))), 16 )
+
+def find_collision():
+   sha1_dict = {}
+
+   not_found = True
+
+   i = 0
+   while not_found:
+      text = integer_to_char_list(i)
+
+      sha1val = SHA1(text) & 0x3ffffffffffff
+      if sha1val in sha1_dict:
+         return (sha1val, text, sha1_dict[sha1val]) 
+
+      sha1_dict[sha1val] = text
+
+      if (i % 10000) == 0:
+         print "{:,}".format(i)
+
+      i += 1
+
+
+def integer_to_char_list(num):
+   text = ''
+   while num > 0:
+      text += chr(num & 255)
+      num = num >> 8
+   return text
+
 
 
 def main():
-   print SHA1('abc')
+   print find_collision()
+   # (28992493371179L, ';^\x94\x02', '\x98\x05e\x02')
+   #print SHA1('')
+
+
 
 if __name__ == '__main__':
    main()
