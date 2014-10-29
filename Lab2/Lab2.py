@@ -84,7 +84,7 @@ def cbc_decrypt(ciphertext, key, iv):
    #totalPtext += ptext
 
    for i in xrange(blockSize, len(ascii_ciphertext), blockSize):
-      block = ascii_ciphertext[i:i+blockSize]
+      block = ascii_ciphertext[i:i+blockSize]   
       ptext = xor(cipher.decrypt(block), ctext)
       totalPtext += ptext
       ctext = block

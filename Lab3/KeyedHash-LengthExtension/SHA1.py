@@ -89,6 +89,7 @@ def SHA1(message):
       h4 = (h4 + e) & 0xffffffff
    
    #print ('%08x %08x %08x %08x %08x' % (h0, h1, h2, h3, h4))
+   #return ('%08x%08x%08x%08x%08x' % (h0, h1, h2, h3, h4))
    return  int( ('0x' + ('%08x%08x%08x%08x%08x' % (h0, h1, h2, h3, h4))), 16 )
 
 def SHA1(message, h0, h1, h2, h3, h4):
@@ -229,6 +230,7 @@ def taskIIB():
 
 def taskIIIA():
    input_val = raw_input('Enter url of last post: ')
+   #print input_val
    # http://0.0.0.0:8080/?who=Costello&what=You%20know%20the%20fellows%27%20names?&mac=44f8b9fdca9343c6c94e0a26ca5e2192d9e5bf05
    match = re.match(r'http://0.0.0.0:8080/\?who=(.*)&what=(.*)&mac=(.*)', input_val)
    who = match.group(1)
@@ -238,22 +240,26 @@ def taskIIIA():
    # print who
    # print what
    # print mac
+   print what
 
    message = what
-   orig_message_bit_len = len(message) * 8
+   orig_message_bit_len = (len(message) + 16) * 8
    message += b'\x80'
 
-   while (len(message) * 8) % 512 != 448:
+   while ((len(message) + 16) * 8) % 512 != 448:
       message += b'\x00'
 
    size_chars = struct.pack('>Q', orig_message_bit_len)
    message += size_chars
 
-   newWhat = message + r'%20Deal%20with%20it!'
+   print len(message) + 16
+
+   ourMsg = 'Dealwithit'
+   newWhat = message + r'&what=' + ourMsg
 
    #print list(message)
-
-   #print newWhat
+   print size_chars.encode('string-escape')
+   print newWhat
 
    h0 = int(('0x' + mac[:8]), 16)
    h1 = int(('0x' + mac[8:16]), 16)
@@ -261,10 +267,13 @@ def taskIIIA():
    h3 = int(('0x' + mac[24:32]), 16)
    h4 = int(('0x' + mac[32:]), 16)
 
-   newMac = SHA1(newWhat,h0,h1,h2,h3,h4)
+   newMac = SHA1(ourMsg,h0,h1,h2,h3,h4)
    #print newMac
-
+   newWhat = newWhat.replace(size_chars, size_chars.encode('string-escape'))
    newWhat = newWhat.replace('\x00', r'\x00')
+   newWhat = newWhat.replace('\x80', r'\x80')
+
+
 
    newUrl = 'http://0.0.0.0:8080/?who=' + who + '&what=' + newWhat + '&mac=' + newMac
    print ''
