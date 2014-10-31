@@ -242,7 +242,7 @@ def taskIIIA():
    # print mac
    print 'new what: ' + what.replace('%', '\\x')
 
-   message = what
+   message = convertPercents(what)
    orig_message_bit_len = (len(message) + 16) * 8
    message += b'\x80'
 
@@ -273,18 +273,26 @@ def taskIIIA():
 
    newMac = SHA1(ourMsg,h0,h1,h2,h3,h4)
    #print newMac
-   newWhat = convertPercents(newWhat)
-   # newWhat = newWhat.replace('\x00', r'\x00')
-   # newWhat = newWhat.replace('\x80', r'\x80')
+   newWhat = newWhat.replace(size_chars, size_chars.encode('string-escape'))
+   newWhat = newWhat.replace('\x00', r'\x00')
+   newWhat = newWhat.replace('\x80', r'\x80')
    # newWhat = newWhat.replace('\x00', r'%00')
    # newWhat = newWhat.replace('\x80', r'%80')
-   newWhat = str(newWhat).replace('\x00', r'%00')
+   newWhat = str(newWhat).replace('\\x', '%')
 
-
+   print 'newWhat: ' + newWhat
 
    newUrl = 'http://0.0.0.0:8080/?who=' + who + '&what=' + newWhat + '&mac=' + newMac
    print ''
    print newUrl
+
+
+def taskIIIA_new():
+   input_val = raw_input('Enter url of last post: ')
+   match = re.match(r'http://0.0.0.0:8080/\?who=(.*)&what=(.*)&mac=(.*)', input_val)
+   who = match.group(1)
+   what = match.group(2)
+   mac = match.group(3)
 
 
 def hexToChars(hexStr):
@@ -315,8 +323,8 @@ def convertPercents(oldStr):
 
 def main():
    #taskIIB()
-   #taskIIIA()
-   print convertPercents('http://0.0.0.0:8080/?who=Costello&what=Funny%20names?&mac=14405ccf50915fe87bbb8f04bfbcdd5119980a06')
+   taskIIIA()
+   #print convertPercents('http://0.0.0.0:8080/?who=Costello&what=Funny%20names?&mac=14405ccf50915fe87bbb8f04bfbcdd5119980a06')
 
 
 if __name__ == '__main__':
