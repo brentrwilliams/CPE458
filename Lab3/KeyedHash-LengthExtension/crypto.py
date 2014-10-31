@@ -2,8 +2,8 @@ import os, hashlib
 
 class KeyedMAC:
 	def __init__(self):
-		self.key = os.urandom(hashlib.sha1().digest_size)
-		#self.key = "YELLOW SUBMARINE"
+		#self.key = os.urandom(hashlib.sha1().digest_size)
+		self.key = "YELLOW SUBMARINE"
 
 	def mac_sha1_sign(self, key, msg):
 		return hashlib.sha1(key.encode("hex") + msg).digest()

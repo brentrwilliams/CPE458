@@ -5,7 +5,7 @@ def circular_shift_left(x, shift):
   return ((x << shift) | (x >> (32 - shift))) & 0xffffffff
 
 
-def SHA1(message):
+def SHA1_orig(message):
    '''
    Note 1: All variables are unsigned 32 bits and wrap modulo 2^32 when calculating, except
         ml the message length which is 64 bits, and
@@ -238,9 +238,9 @@ def taskIIIA():
    mac = match.group(3)
 
    # print who
-   # print what
+   print 'what: ' + what
    # print mac
-   print what
+   print 'new what: ' + what.replace('%', '\\x')
 
    message = what
    orig_message_bit_len = (len(message) + 16) * 8
@@ -252,10 +252,14 @@ def taskIIIA():
    size_chars = struct.pack('>Q', orig_message_bit_len)
    message += size_chars
 
+   print 'orig_message_bit_len:' + str(orig_message_bit_len)
+   print 'size_chars: ' + size_chars 
+
    print len(message) + 16
 
    ourMsg = 'Dealwithit'
-   newWhat = message + r'&what=' + ourMsg
+   #newWhat = message + r'&what=' + ourMsg
+   newWhat = message + ourMsg
 
    #print list(message)
    print size_chars.encode('string-escape')
@@ -269,9 +273,12 @@ def taskIIIA():
 
    newMac = SHA1(ourMsg,h0,h1,h2,h3,h4)
    #print newMac
-   newWhat = newWhat.replace(size_chars, size_chars.encode('string-escape'))
-   newWhat = newWhat.replace('\x00', r'\x00')
-   newWhat = newWhat.replace('\x80', r'\x80')
+   newWhat = convertPercents(newWhat)
+   # newWhat = newWhat.replace('\x00', r'\x00')
+   # newWhat = newWhat.replace('\x80', r'\x80')
+   # newWhat = newWhat.replace('\x00', r'%00')
+   # newWhat = newWhat.replace('\x80', r'%80')
+   newWhat = str(newWhat).replace('\x00', r'%00')
 
 
 
@@ -280,9 +287,36 @@ def taskIIIA():
    print newUrl
 
 
+def hexToChars(hexStr):
+   hexStr = hexStr[2:-1]
+   charStr = ''
+   for i in range(0,len(hexStr),2):
+      ordNum = int('0x' + hexStr[i:i+2], 16)
+      charStr += chr(ordNum)
+   return charStr
+
+
+def convertPercents(oldStr):
+   newStr = ''
+   i = 0
+   while i < len(oldStr) - 3:
+      if oldStr[i] == '%':
+         ordNum = int('0x' + oldStr[i+1:i+3], 16)
+         newStr += chr(ordNum)
+         print '%: ' + oldStr[i:i+3] + ' => newStr: ' + newStr
+         i += 3
+      else:
+         newStr += oldStr[i]
+         print oldStr[i] + ' => newStr: ' + newStr
+         i += 1
+   
+   print ''
+   return newStr
+
 def main():
    #taskIIB()
-   taskIIIA()
+   #taskIIIA()
+   print convertPercents('http://0.0.0.0:8080/?who=Costello&what=Funny%20names?&mac=14405ccf50915fe87bbb8f04bfbcdd5119980a06')
 
 
 if __name__ == '__main__':

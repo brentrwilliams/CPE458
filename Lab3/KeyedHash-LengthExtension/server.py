@@ -27,6 +27,7 @@ class index:
 		except:
 			return render.generic(posts, "Signature must be in hex.")
 		
+		print list(user_data.what)
 		if mac.verify_post(user_data.what, user_data.mac):
 			try:
 				unicode(user_data.what)
