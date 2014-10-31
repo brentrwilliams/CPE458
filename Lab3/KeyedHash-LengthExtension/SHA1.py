@@ -14,7 +14,7 @@ def SHA1_orig(message):
    Note 2: All constants in this pseudo code are in big endian.
            Within each word, the most significant byte is stored in the leftmost byte position
    '''
-
+   
    h0 = 0x67452301
    h1 = 0xEFCDAB89
    h2 = 0x98BADCFE
@@ -23,6 +23,7 @@ def SHA1_orig(message):
 
    # message length in bits (always a multiple of the number of bits in a character).
    orig_message_byte_len = len(message)
+   print "length: " + str(orig_message_byte_len)
    orig_message_bit_len = len(message) * 8
 
    # Pre-processing:
@@ -95,7 +96,7 @@ def SHA1_orig(message):
    return ('%08x%08x%08x%08x%08x' % (h0, h1, h2, h3, h4))
    #return  int( ('0x' + ('%08x%08x%08x%08x%08x' % (h0, h1, h2, h3, h4))), 16 )
 
-def SHA1(message, h0, h1, h2, h3, h4):
+def SHA1(message, my0, my1, my2, my3, my4, length):
    '''
    Note 1: All variables are unsigned 32 bits and wrap modulo 2^32 when calculating, except
         ml the message length which is 64 bits, and
@@ -104,9 +105,15 @@ def SHA1(message, h0, h1, h2, h3, h4):
            Within each word, the most significant byte is stored in the leftmost byte position
    '''
 
+   h0 = my0
+   h1 = my1
+   h2 = my2
+   h3 = my3
+   h4 = my4
+
    # message length in bits (always a multiple of the number of bits in a character).
    orig_message_byte_len = len(message)
-   orig_message_bit_len = len(message) * 8
+   orig_message_bit_len = length * 8#len(message) * 8
 
    # Pre-processing:
    # append the bit '1' to the message i.e. by adding 0x80 if characters are 8 bits.
@@ -173,9 +180,11 @@ def SHA1(message, h0, h1, h2, h3, h4):
       h3 = (h3 + d) & 0xffffffff
       h4 = (h4 + e) & 0xffffffff
       print hex(h0) + hex(h1) + hex(h2) + hex(h3) + hex(h4)
-
+   
    #print ('%08x %08x %08x %08x %08x' % (h0, h1, h2, h3, h4))
    return ('%08x%08x%08x%08x%08x' % (h0, h1, h2, h3, h4))
+   #return  int( ('0x' + ('%08x%08x%08x%08x%08x' % (h0, h1, h2, h3, h4))), 16 )
+
 
 def find_collision():
    sha1_dict = {}
@@ -275,18 +284,20 @@ def taskIIIA():
    print size_chars.encode('string-escape')
    print newWhat
 
-   h0 = int(('0x' + mac[:8]), 16)
+   h0 = int(('0x' + mac[0:8]), 16)
    h1 = int(('0x' + mac[8:16]), 16)
    h2 = int(('0x' + mac[16:24]), 16)
    h3 = int(('0x' + mac[24:32]), 16)
-   h4 = int(('0x' + mac[32:]), 16)
+   h4 = int(('0x' + mac[32:40]), 16)
 
    print "the mac!: " + mac
    print hex(h0) + " " + hex(h1) + " " + hex(h2) + " " + hex(h3) + " " + hex(h4)
 
-   print SHA1("Dealwithit", h0, h1, h2, h3, h4)
+   print len(newWhat) + 32
 
-   newMac = SHA1(ourMsg,h0,h1,h2,h3,h4)
+   print SHA1(ourMsg, h0, h1, h2, h3, h4, len(newWhat) + 32)
+
+   newMac = SHA1(ourMsg,h0,h1,h2,h3,h4, len(newWhat) + 32)
    print newMac
    newWhat = newWhat.replace(size_chars, size_chars.encode('string-escape'))
    newWhat = newWhat.replace('\x00', r'\x00')
