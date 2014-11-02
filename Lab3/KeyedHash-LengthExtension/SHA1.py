@@ -52,7 +52,6 @@ def SHA1_orig(message):
       for i in xrange(16, 80):
          words.append(circular_shift_left( words[i - 3] ^ words[i - 8] ^ words[i - 14] ^ words[i - 16], 1 ))
 
-      print hex(h0) + hex(h1) + hex(h2) + hex(h3) + hex(h4)
       # Initialize hash value for this chunk:
       a = h0
       b = h1
@@ -90,7 +89,6 @@ def SHA1_orig(message):
       h2 = (h2 + c) & 0xffffffff
       h3 = (h3 + d) & 0xffffffff
       h4 = (h4 + e) & 0xffffffff
-      print hex(h0) + hex(h1) + hex(h2) + hex(h3) + hex(h4)
    
    #print ('%08x %08x %08x %08x %08x' % (h0, h1, h2, h3, h4))
    return ('%08x%08x%08x%08x%08x' % (h0, h1, h2, h3, h4))
@@ -141,7 +139,6 @@ def SHA1(message, my0, my1, my2, my3, my4, length):
       for i in xrange(16, 80):
          words.append(circular_shift_left( words[i - 3] ^ words[i - 8] ^ words[i - 14] ^ words[i - 16], 1 ))
 
-      print hex(h0) + hex(h1) + hex(h2) + hex(h3) + hex(h4)
       # Initialize hash value for this chunk:
       a = h0
       b = h1
@@ -179,7 +176,6 @@ def SHA1(message, my0, my1, my2, my3, my4, length):
       h2 = (h2 + c) & 0xffffffff
       h3 = (h3 + d) & 0xffffffff
       h4 = (h4 + e) & 0xffffffff
-      print hex(h0) + hex(h1) + hex(h2) + hex(h3) + hex(h4)
    
    #print ('%08x %08x %08x %08x %08x' % (h0, h1, h2, h3, h4))
    return ('%08x%08x%08x%08x%08x' % (h0, h1, h2, h3, h4))
@@ -244,45 +240,24 @@ def taskIIB():
 
 def taskIIIA():
    input_val = raw_input('Enter url of last post: ')
-   #print input_val
-   # http://0.0.0.0:8080/?who=Costello&what=You%20know%20the%20fellows%27%20names?&mac=44f8b9fdca9343c6c94e0a26ca5e2192d9e5bf05
    match = re.match(r'http://0.0.0.0:8080/\?who=(.*)&what=(.*)&mac=(.*)', input_val)
    who = match.group(1)
    what = match.group(2)
    mac = match.group(3)
 
-   # print who
-   print 'what: ' + what
-   # print mac
-   print 'new what: ' + what.replace('%20', ' ')
-   #what = what.replace('%20', ' ')
    message = convertPercents(what)
-   print message
-   orig_message_bit_len = (len(message) + 32) * 8
+
+   orig_message_bit_len = (len(message) + 40) * 8
    message += b'\x80'
 
-   while ((len(message) + 32) * 8) % 512 != 448:
+   while ((len(message) + 40) * 8) % 512 != 448:
       message += b'\x00'
 
    size_chars = struct.pack('>Q', orig_message_bit_len)
    message += size_chars
 
-   print 'orig_message_bit_len:' + str(orig_message_bit_len)
-   print 'size_chars: ' + size_chars 
-
-   print len(message) + 32
-
-   print "our sha: " + SHA1_orig("YELLOW SUBMARINE".encode("hex") + message + "Dealwithit")
-   print "hashlib: " + hashlib.sha1("YELLOW SUBMARINE".encode("hex") + "Funny names?").digest().encode("hex")
-   print "the mac: " + mac
-
    ourMsg = 'Dealwithit'
-   #newWhat = message + r'&what=' + ourMsg
    newWhat = message + ourMsg
-
-   #print list(message)
-   print size_chars.encode('string-escape')
-   print newWhat
 
    h0 = int(('0x' + mac[0:8]), 16)
    h1 = int(('0x' + mac[8:16]), 16)
@@ -290,23 +265,13 @@ def taskIIIA():
    h3 = int(('0x' + mac[24:32]), 16)
    h4 = int(('0x' + mac[32:40]), 16)
 
-   print "the mac!: " + mac
-   print hex(h0) + " " + hex(h1) + " " + hex(h2) + " " + hex(h3) + " " + hex(h4)
+   newMac = SHA1(ourMsg,h0,h1,h2,h3,h4, len(newWhat) + 40)
 
-   print len(newWhat) + 32
-
-   print SHA1(ourMsg, h0, h1, h2, h3, h4, len(newWhat) + 32)
-
-   newMac = SHA1(ourMsg,h0,h1,h2,h3,h4, len(newWhat) + 32)
-   print newMac
    newWhat = newWhat.replace(size_chars, size_chars.encode('string-escape'))
    newWhat = newWhat.replace('\x00', r'\x00')
    newWhat = newWhat.replace('\x80', r'\x80')
-   # newWhat = newWhat.replace('\x00', r'%00')
-   # newWhat = newWhat.replace('\x80', r'%80')
    newWhat = str(newWhat).replace('\\x', '%')
 
-   print 'newWhat: ' + newWhat
 
    newUrl = 'http://0.0.0.0:8080/?who=' + who + '&what=' + newWhat + '&mac=' + newMac
    print ''
