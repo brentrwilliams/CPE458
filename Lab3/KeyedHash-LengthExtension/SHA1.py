@@ -1,5 +1,6 @@
 import struct
 import re
+import hashlib
 
 def circular_shift_left(x, shift):
   return ((x << shift) | (x >> (32 - shift))) & 0xffffffff
@@ -13,7 +14,7 @@ def SHA1_orig(message):
    Note 2: All constants in this pseudo code are in big endian.
            Within each word, the most significant byte is stored in the leftmost byte position
    '''
-
+   
    h0 = 0x67452301
    h1 = 0xEFCDAB89
    h2 = 0x98BADCFE
@@ -22,6 +23,7 @@ def SHA1_orig(message):
 
    # message length in bits (always a multiple of the number of bits in a character).
    orig_message_byte_len = len(message)
+   print "length: " + str(orig_message_byte_len)
    orig_message_bit_len = len(message) * 8
 
    # Pre-processing:
@@ -50,6 +52,7 @@ def SHA1_orig(message):
       for i in xrange(16, 80):
          words.append(circular_shift_left( words[i - 3] ^ words[i - 8] ^ words[i - 14] ^ words[i - 16], 1 ))
 
+      print hex(h0) + hex(h1) + hex(h2) + hex(h3) + hex(h4)
       # Initialize hash value for this chunk:
       a = h0
       b = h1
@@ -87,12 +90,13 @@ def SHA1_orig(message):
       h2 = (h2 + c) & 0xffffffff
       h3 = (h3 + d) & 0xffffffff
       h4 = (h4 + e) & 0xffffffff
+      print hex(h0) + hex(h1) + hex(h2) + hex(h3) + hex(h4)
    
    #print ('%08x %08x %08x %08x %08x' % (h0, h1, h2, h3, h4))
-   #return ('%08x%08x%08x%08x%08x' % (h0, h1, h2, h3, h4))
-   return  int( ('0x' + ('%08x%08x%08x%08x%08x' % (h0, h1, h2, h3, h4))), 16 )
+   return ('%08x%08x%08x%08x%08x' % (h0, h1, h2, h3, h4))
+   #return  int( ('0x' + ('%08x%08x%08x%08x%08x' % (h0, h1, h2, h3, h4))), 16 )
 
-def SHA1(message, h0, h1, h2, h3, h4):
+def SHA1(message, my0, my1, my2, my3, my4, length):
    '''
    Note 1: All variables are unsigned 32 bits and wrap modulo 2^32 when calculating, except
         ml the message length which is 64 bits, and
@@ -101,9 +105,15 @@ def SHA1(message, h0, h1, h2, h3, h4):
            Within each word, the most significant byte is stored in the leftmost byte position
    '''
 
+   h0 = my0
+   h1 = my1
+   h2 = my2
+   h3 = my3
+   h4 = my4
+
    # message length in bits (always a multiple of the number of bits in a character).
    orig_message_byte_len = len(message)
-   orig_message_bit_len = len(message) * 8
+   orig_message_bit_len = length * 8#len(message) * 8
 
    # Pre-processing:
    # append the bit '1' to the message i.e. by adding 0x80 if characters are 8 bits.
@@ -131,6 +141,7 @@ def SHA1(message, h0, h1, h2, h3, h4):
       for i in xrange(16, 80):
          words.append(circular_shift_left( words[i - 3] ^ words[i - 8] ^ words[i - 14] ^ words[i - 16], 1 ))
 
+      print hex(h0) + hex(h1) + hex(h2) + hex(h3) + hex(h4)
       # Initialize hash value for this chunk:
       a = h0
       b = h1
@@ -168,9 +179,12 @@ def SHA1(message, h0, h1, h2, h3, h4):
       h2 = (h2 + c) & 0xffffffff
       h3 = (h3 + d) & 0xffffffff
       h4 = (h4 + e) & 0xffffffff
+      print hex(h0) + hex(h1) + hex(h2) + hex(h3) + hex(h4)
    
    #print ('%08x %08x %08x %08x %08x' % (h0, h1, h2, h3, h4))
    return ('%08x%08x%08x%08x%08x' % (h0, h1, h2, h3, h4))
+   #return  int( ('0x' + ('%08x%08x%08x%08x%08x' % (h0, h1, h2, h3, h4))), 16 )
+
 
 def find_collision():
    sha1_dict = {}
@@ -240,13 +254,14 @@ def taskIIIA():
    # print who
    print 'what: ' + what
    # print mac
-   print 'new what: ' + what.replace('%', '\\x')
-
+   print 'new what: ' + what.replace('%20', ' ')
+   #what = what.replace('%20', ' ')
    message = convertPercents(what)
-   orig_message_bit_len = (len(message) + 16) * 8
+   print message
+   orig_message_bit_len = (len(message) + 32) * 8
    message += b'\x80'
 
-   while ((len(message) + 16) * 8) % 512 != 448:
+   while ((len(message) + 32) * 8) % 512 != 448:
       message += b'\x00'
 
    size_chars = struct.pack('>Q', orig_message_bit_len)
@@ -255,7 +270,11 @@ def taskIIIA():
    print 'orig_message_bit_len:' + str(orig_message_bit_len)
    print 'size_chars: ' + size_chars 
 
-   print len(message) + 16
+   print len(message) + 32
+
+   print "our sha: " + SHA1_orig("YELLOW SUBMARINE".encode("hex") + message + "Dealwithit")
+   print "hashlib: " + hashlib.sha1("YELLOW SUBMARINE".encode("hex") + "Funny names?").digest().encode("hex")
+   print "the mac: " + mac
 
    ourMsg = 'Dealwithit'
    #newWhat = message + r'&what=' + ourMsg
@@ -265,14 +284,21 @@ def taskIIIA():
    print size_chars.encode('string-escape')
    print newWhat
 
-   h0 = int(('0x' + mac[:8]), 16)
+   h0 = int(('0x' + mac[0:8]), 16)
    h1 = int(('0x' + mac[8:16]), 16)
    h2 = int(('0x' + mac[16:24]), 16)
    h3 = int(('0x' + mac[24:32]), 16)
-   h4 = int(('0x' + mac[32:]), 16)
+   h4 = int(('0x' + mac[32:40]), 16)
 
-   newMac = SHA1(ourMsg,h0,h1,h2,h3,h4)
-   #print newMac
+   print "the mac!: " + mac
+   print hex(h0) + " " + hex(h1) + " " + hex(h2) + " " + hex(h3) + " " + hex(h4)
+
+   print len(newWhat) + 32
+
+   print SHA1(ourMsg, h0, h1, h2, h3, h4, len(newWhat) + 32)
+
+   newMac = SHA1(ourMsg,h0,h1,h2,h3,h4, len(newWhat) + 32)
+   print newMac
    newWhat = newWhat.replace(size_chars, size_chars.encode('string-escape'))
    newWhat = newWhat.replace('\x00', r'\x00')
    newWhat = newWhat.replace('\x80', r'\x80')
@@ -307,15 +333,15 @@ def hexToChars(hexStr):
 def convertPercents(oldStr):
    newStr = ''
    i = 0
-   while i < len(oldStr) - 3:
+   while i < len(oldStr):
       if oldStr[i] == '%':
          ordNum = int('0x' + oldStr[i+1:i+3], 16)
          newStr += chr(ordNum)
-         print '%: ' + oldStr[i:i+3] + ' => newStr: ' + newStr
+         #print '%: ' + oldStr[i:i+3] + ' => newStr: ' + newStr
          i += 3
       else:
          newStr += oldStr[i]
-         print oldStr[i] + ' => newStr: ' + newStr
+         #print oldStr[i] + ' => newStr: ' + newStr
          i += 1
    
    print ''
