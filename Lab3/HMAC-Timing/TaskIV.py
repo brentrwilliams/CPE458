@@ -8,10 +8,13 @@ def two_space_hex(hex_str):
       return hex_str[2:]
 
 def taskIVA():
-	mac = '0000000000000000000000000000000000000000'
+	mac = '0' * 40
 	knownVals = ''
 	numFound = 0
 	testVal = 0
+	lastTime = 0
+	maxTime = 0
+	maxVal = ''
 	while(True):
 		testMac = knownVals + two_space_hex(hex(testVal)) + mac[(numFound + 1)*2:]
 
@@ -24,14 +27,53 @@ def taskIVA():
 			quit()
 
 		tot = stop - start
-		if tot >= .01 * (numFound + 1):	
+		#print hex(testVal) + ': ' + str(tot)
+		# 85b0118f691ab66f68fe
+
+		# if tot > maxTime and tot < ((numFound+1) * 0.02) + 0.03:
+		# 	maxTime = tot
+		# 	maxVal = two_space_hex(hex(testVal))
+
+		# if testVal == 255:
+		# 	if maxTime < ((numFound+1) * 0.02) + 0.01:
+		# 		print 'Backtracking...'
+		# 		if numFound > 0:
+		# 			numFound-= 1
+		# 			print 'old: ' + knownVals
+		# 			knownVals = knownVals[:-2]
+		# 			print 'new: ' + knownVals
+
+		# 	else:
+		# 		knownVals += maxVal
+		# 		print str(numFound+1) + "/20:" + knownVals 
+		# 		print 'maxTime: ' + str(maxTime)
+		# 		numFound += 1
+		# 	testVal = -1
+		# 	maxTime = 0
+
+		# testVal += 1
+
+		if tot >= 0.02347 * (numFound + 1) + 0.01 and tot < 0.04 * (numFound + 1):	
 			numFound += 1 
 			knownVals += two_space_hex(hex(testVal))
 			
 			testVal = 0
-			print "yay!: " + testMac
-		elif testVal > 256:
-			print "huh??????"
+			lastTime = tot
+			print "tot time: " + str(tot)
+			print "lower bound: " + str(0.02347 * (numFound) + .01)
+			print "upper bound: " + str(0.04 * (numFound))
+			#print "yay!: " + testMac
+			print str(numFound) + "/20:" + testMac
+		elif testVal == 255:
+			print 'Backtracking...'
+			if numFound > 0:
+				numFound-= 1
+				print 'old: ' + knownVals
+				testVal = ord(knownVals[-2:].decode("hex"))
+				knownVals = knownVals[:-2]
+
+				print 'new: ' + knownVals
+				#testVal = 0
 		else:
 			testVal+= 1
 
