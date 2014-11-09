@@ -1,6 +1,8 @@
-from CryptoUtils import LetterFrequencies, index_of_coincidence, index_to_char, char_to_index
+from CryptoUtils import LetterFrequencies, index_of_coincidence, index_to_char, char_to_index, NGramScorer
 import math
 import CaesarCipher
+
+from pycipher import Vigenere
 
 def create_tableau():
    alphabet = "abcdefghijklmnopqrstuvwxyz"
@@ -57,13 +59,16 @@ def decrypt(ciphertext, key):
    return plaintext
 
 
+
 def get_periods(ciphertext):
    '''
    Returns all the significant periods sorted in ascending order by period
    '''
    stripped_ciphertext = [char.lower() for char in ciphertext if char.isalpha()]
    period_iocs = []
-   for period in range(2,27):
+   max_period  = 27
+
+   for period in range(2,max_period):
       sum_ioc = 0.0
       for index in range(0,period):
          text = ''.join([stripped_ciphertext[i] for i in range(0+index, len(stripped_ciphertext), period)])
@@ -101,23 +106,28 @@ def get_periods(ciphertext):
 
 def crack(ciphertext):
    '''
-   decrypt a ciphertext encrypted with a caesar cipher and an unknown key
+   decrypt a ciphertext encrypted with a vigenere cipher and an unknown key
    ciphertext is the ciphertext in ASCII
    '''
    best_plaintext = ''
 
    periods = get_periods(ciphertext)
-   print periods
+   print 'Possible periods: ' + str(periods)
 
    period = periods[0]
    stripped_ciphertext = [char.lower() for char in ciphertext if char.isalpha()]
    key = ''
    for index in range(0,period):
+      #print str(index) + ': '
       text = ''.join([stripped_ciphertext[i] for i in range(0+index, len(stripped_ciphertext), period)])
-      print text
+      #print text
       key += index_to_char( CaesarCipher.get_best_key(text) )
+      #print 'Calculated Key: ' + key[-1]
+      #print ''
 
    print key
+
+   best_plaintext = decrypt(ciphertext,key)
 
    return best_plaintext
 
@@ -127,15 +137,31 @@ def main():
    text = '''Most of the production will take place in Montreal, where the studio is currently ramping up its feature animation team to work on Charming and subsequent productions. These first films will allow us to build infrastructure, a team, pipeline and so on, says Butler. It will help us make the feature animation studio we want to be. At the same time, were also going to start to go out and develop our own scripts for our movies. And theyll be ones we own more of going forward.
 In terms of animation style, Butler plans to maintain a visual effects quality to the work. Were very ambitious about the quality, he says. I want to capitalize on the high production values we instituted on Beans and then keep it in the box. In VFX you typically have to be a lot more agile, but I learnt my craft at Disney and I feel like we can manage them in a similar way. We want to be successful  make good looking films and make more than one.
 Cinesite will continue to work in visual effects  upcoming projects include The Man From U.N.C.L.E. and San Andreas, for example  but this work will run alongside animated features. Id love to do a feature length version of Beans, admits Butler when asked about future plans, who also notes that the studio also plans on accepting scripts and developing ideas for films.'''
+   key = 'CIPHERSAREUSINBEDYUP'
 
-   key = 'FORTIFICATION'
-   ciphertext = encrypt(text, key)
+   #text = 'bigpoppanoinfoforthedeafederalagentsmadcauseimflagranttapmycellandthephoneinthebasementmyteamsupremestaycleantriplebeamlyricaldreamibethatcatyouseeatalleventsbentgatsinholstersgirlsonshouldersplayboyitoldyameremicstomebruisetoomuchilosetoomuchsteponstagethegirlsbootoomuchiguessitscauseyourunwithlamedudestoomuchmelosemytouchneverthatifididaintnoproblemtogetthegatwherethetrueplayersatthrowyourroliesintheskywaveemsidetosideandkeepyourhandshighwhileigiveyourgirltheeyeplayerpleaselyricallyfellasseebigbeflossingjigonthecoveroffortunedoubleoheresmyphonenumberyourmanaintgottoknowigotthedoughgottheflowdownpizatplatinumpluslikethizatdangerousontrizacksleaveyourassflizat'
+   #key = 'momoneymoprobs'
+   
    #ciphertext = 'vptnvffuntshtarptymjwzirappljmhhqvsubwlzzygvtyitarptyiougxiuydtgzhhvvmumshwkzgstfmekvmpkswdgbilvjljmglmjfqwioiivknulvvfemioiemojtywdsajtwmtcgluysdsumfbieugmvalvxkjduetukatymvkqzhvqvgvptytjwwldyeevquhlulwpkt'
+   
+   #ciphertext = 'vptnvffuntshtarptymjwzirappljmhhqvsubwlzzygvtyitarptyiougxiuydtgzhhvvmumshwkzgstfmekvmpkswdgbilvjljmglmjfqwioiivknulvvfemioiemojtywdsajtwmtcgluysdsumfbieugmvalvxkjduetukatymvkqzhvqvgvptytjwwldyeevquhlulwpkt'
+   #key = 'CIPHERS'
+
+   ciphertext = encrypt(text, key)
+
+   print 'key: ' + key
+   print 'len(key): ' + str(len(key))
+   print ''
 
    print 'ciphertext: '
    print ciphertext
    print ''
-   print 'cracked plaintext:'
+   
+   print 'decrypted: '
+   print decrypt(ciphertext, key)
+   print ''
+   
+   print 'cracked: '
    print crack(ciphertext)
 
 

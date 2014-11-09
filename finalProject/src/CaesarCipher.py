@@ -43,7 +43,7 @@ def get_best_key(ciphertext):
       possible_plaintext = decrypt(ciphertext, key)
       letter_frequencies = LetterFrequencies(possible_plaintext)
       chi_squared = letter_frequencies.chi_squared()
-      print str(index_to_char(key)) + ': ' + str(chi_squared)
+      #print str(index_to_char(key)) + ': ' + str(chi_squared)
       
       if chi_squared < best_chi_squared:
          best_chi_squared = chi_squared
@@ -61,11 +61,11 @@ def crack(ciphertext):
    best_chi_squared = letter_frequencies.chi_squared()
    best_plaintext = ciphertext
    
-   for key in xrange(1,26):
+   for key in xrange(0,26):
       possible_plaintext = decrypt(ciphertext, key)
       letter_frequencies = LetterFrequencies(possible_plaintext)
       chi_squared = letter_frequencies.chi_squared()
-      print chi_squared
+      #print str(key) + ':\t' + str(chi_squared)
       
       if chi_squared < best_chi_squared:
          best_chi_squared = chi_squared
@@ -79,7 +79,9 @@ def main():
 In terms of animation style, Butler plans to maintain a visual effects quality to the work. Were very ambitious about the quality, he says. I want to capitalize on the high production values we instituted on Beans and then keep it in the box. In VFX you typically have to be a lot more agile, but I learnt my craft at Disney and I feel like we can manage them in a similar way. We want to be successful  make good looking films and make more than one.
 Cinesite will continue to work in visual effects  upcoming projects include The Man From U.N.C.L.E. and San Andreas, for example  but this work will run alongside animated features. Id love to do a feature length version of Beans, admits Butler when asked about future plans, who also notes that the studio also plans on accepting scripts and developing ideas for films.'''
 
-   ciphertext = encrypt(text, 10)
+
+   #ciphertext = encrypt(text, 10)
+   ciphertext = 'aoljhlzhyjpwolypzvulvmaollhysplzaruvduhukzptwslzajpwolyzpapzhafwlvmzbizapabapvujpwolypudopjolhjoslaalypuaolwshpualeapzzopmalkhjlyahpuubtilyvmwshjlzkvduaolhswohila'
 
    print 'ciphertext: '
    print ciphertext

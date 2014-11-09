@@ -1,4 +1,4 @@
-
+from math import log10
 
 def char_to_index(char):
    return ord(char.lower()) - ord('a')
@@ -47,12 +47,13 @@ class LetterFrequencies(object):
          expected = self.expected_letter_frequency_percentages[char] * self.num_letters
          actual = self.letter_frequencies[char]
 
-         chi_squared_val = ((actual - expected) * (actual - expected)) / expected
+         chi_squared_val += ((actual - expected) * (actual - expected)) / expected
 
       return chi_squared_val
       
 
 def index_of_coincidence(text):
+   #print "'" + text + "'"
    letter_freqs = LetterFrequencies(text)
    alphabet = "abcdefghijklmnopqrstuvwxyz"
    sum_val = 0.0
@@ -61,12 +62,72 @@ def index_of_coincidence(text):
       sum_val += freq * (freq - 1)
 
    N = letter_freqs.num_letters
+
+   if N == 1:
+      return sum_val
+
    return sum_val / (N * (N - 1))
 
 
+
+class NGramScorer(object):
+   """
+   Fitness measuring using the log10 average of english that uses each ngram
+   """
+   def __init__(self, n):
+      super(NGramScorer, self).__init__()
+      self.ngrams = {}
+      self.floor = 0.01
+      self.n = n
+      self.loadNGramStatistics()
+   
+   def loadNGramStatistics(self):
+      file_name = ''
+      if self.n == 1:
+         file_name = 'english_monograms.txt'
+      elif self.n == 2:
+         file_name = 'english_bigrams.txt'
+      elif self.n == 3:
+         file_name = 'english_trigrams.txt'
+      else:
+         file_name = 'english_quadgrams.txt'
+         self.n = 4
+      
+      with open(file_name) as f:
+         count = 0
+         for line in f:
+            line = line.strip()
+            ngram, part, num = line.partition(' ')
+            num = int(num)
+            self.ngrams[ngram] = num
+            count += num
+
+         for key in self.ngrams.keys():
+            self.ngrams[key] = log10(float(self.ngrams[key])/count)
+
+         self.floor /= count
+
+   def score(self,text):
+      '''
+      Higher score means closer to English
+      '''
+      score = 0.0
+
+      for i in range(0,len(text)-self.n+1):
+         ngram = text[i:i+self.n]
+         if ngram in self.ngrams:
+            score += self.ngrams[ngram] 
+         else:
+            score += self.floor
+      return score
+
+
 def main():
-   text = 'Defend the east wall of the castle'
-   print index_of_coincidence(text)
+   ct = 'aoljhlzhyjpwolypzvulvmaollhysplzaruvduhukzptwslzajpwolyzpapzhafwlvmzbizapabapvujpwolypudopjolhjoslaalypuaolwshpualeapzzopmalkhjlyahpuubtilyvmwshjlzkvduaolhswohila'
+   lf = LetterFrequencies(ct)
+   print lf.letter_frequencies
+   print lf.chi_squared()
+
 
 if __name__ == '__main__':
    main()
