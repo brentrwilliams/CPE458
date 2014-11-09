@@ -37,9 +37,9 @@ def decrypt(ciphertext, key):
 def get_best_key(ciphertext):
    letter_frequencies = LetterFrequencies(ciphertext)
    best_chi_squared = letter_frequencies.chi_squared()
-   best_key = 1
+   best_key = 0
    
-   for key in xrange(1,26):
+   for key in xrange(0,26):
       possible_plaintext = decrypt(ciphertext, key)
       letter_frequencies = LetterFrequencies(possible_plaintext)
       chi_squared = letter_frequencies.chi_squared()
