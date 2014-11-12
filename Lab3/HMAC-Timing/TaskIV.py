@@ -18,17 +18,23 @@ def taskIVA():
 	while(True):
 		testMac = knownVals + two_space_hex(hex(testVal)) + mac[(numFound + 1)*2:]
 
-		start = time.time()
-		response = urllib2.urlopen('http://localhost:8080/?q=foo&mac=' + testMac)
-		stop = time.time()
+		totVals = []
 
-		if(response.read().find("Invalid signature") == -1):
-			print testMac
-			quit()
+		for i in xrange(0, 5):
+			start = time.time()
+			response = urllib2.urlopen('http://localhost:8080/?q=foo&mac=' + testMac)
+			stop = time.time()
 
-		tot = stop - start
+			if(response.read().find("Invalid signature") == -1):
+				print testMac
+				quit()
+
+			totVals.append(stop - start)
+
+		totVals.sort()
+		tot = totVals[2]
 		#print hex(testVal) + ': ' + str(tot)
-		# 85b0118f691ab66f68fe
+		#85b0118f691ab66f68fe
 
 		# if tot > maxTime and tot < ((numFound+1) * 0.02) + 0.03:
 		# 	maxTime = tot
@@ -53,14 +59,14 @@ def taskIVA():
 
 		# testVal += 1
 
-		if tot >= 0.02347 * (numFound + 1) + 0.01 and tot < 0.04 * (numFound + 1):	
+		if tot >= 0.05 * (numFound + 1): #and tot < 0.05 * (numFound + 1):	
 			numFound += 1 
 			knownVals += two_space_hex(hex(testVal))
 			
 			testVal = 0
 			lastTime = tot
 			print "tot time: " + str(tot)
-			print "lower bound: " + str(0.02347 * (numFound) + .01)
+			print "lower bound: " + str(0.023 * (numFound) + .005)
 			print "upper bound: " + str(0.04 * (numFound))
 			#print "yay!: " + testMac
 			print str(numFound) + "/20:" + testMac

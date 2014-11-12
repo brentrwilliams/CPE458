@@ -23,7 +23,7 @@ class HMAC:
 			if tag[i] != tag_new[i]:
 				return False
 			else:
-				time.sleep(.02)	
+				time.sleep(.05)	
 		return True
 
 	def verify_query(self, msg, tag):
