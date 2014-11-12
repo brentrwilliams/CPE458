@@ -356,10 +356,10 @@ int writeBlock(int disk, int bNum, void *block, char * uname, char * password) {
 
 int creatUser(int disk, char * uname, char * password, char * adminpsswd) {
    FILE *fp;
-   char *adminKey, *diskKeyHash, *userKey;
+   char *adminKey, *diskKeyHash;
    char *newAdminCipherText;
-   char *userBuffer;
-   char *possPlaintext = malloc(sizeof(char) * USER_SECTOR_BYTE_LEN);
+   char *adminBuffer;
+   char *adminPlaintext = malloc(sizeof(char) * USER_SECTOR_BYTE_LEN);
    char *possDiskKeyHash = malloc(sizeof(char) * DISKKEY_HASH_SIZE);
    char *plain;
    char *newUserKey, *newUserPlain, *newUserCipher, *hashedUserName;
@@ -372,9 +372,9 @@ int creatUser(int disk, char * uname, char * password, char * adminpsswd) {
       return -1;
    }
 
-   //Create a key for the user in this disk.
-   userKey = (char *) malloc(sizeof(char) * KEY_BYTE_LEN);
-   PKCS5_PBKDF2_HMAC(adminpsswd, strlen(adminpsswd), salt, strlen(salt), ITERATIONS, EVP_sha512(), KEY_BYTE_LEN, userKey);   
+   //Create a key for the admin in this disk.
+   adminKey = (char *) malloc(sizeof(char) * KEY_BYTE_LEN);
+   PKCS5_PBKDF2_HMAC(adminpsswd, strlen(adminpsswd), salt, strlen(salt), ITERATIONS, EVP_sha512(), KEY_BYTE_LEN, adminKey);   
 
    fp = fopen(disks[disk], "r");
 
@@ -383,20 +383,11 @@ int creatUser(int disk, char * uname, char * password, char * adminpsswd) {
    //printf("disk key hash from file: ");
    //printHex(diskKeyHash, DISKKEY_HASH_SIZE);
 
-   userBuffer = (char *) malloc(sizeof(char) * USER_SECTOR_BYTE_LEN);
-   fread(userBuffer, 1, USER_SECTOR_BYTE_LEN, fp);
-
-   decrypt(userBuffer, USER_SECTOR_BYTE_LEN, userKey, iv, possPlaintext);
-   //printf("disk key from admin plain text: ");
-   //printHex(possPlaintext, KEY_BYTE_LEN);
-
-   PKCS5_PBKDF2_HMAC(possPlaintext, KEY_BYTE_LEN, salt, strlen(salt), ITERATIONS, EVP_sha512(), DISKKEY_HASH_SIZE, possDiskKeyHash);
+   adminBuffer = (char *) malloc(sizeof(char) * USER_SECTOR_BYTE_LEN);
+   fread(adminBuffer, 1, USER_SECTOR_BYTE_LEN, fp);
+   decrypt(adminBuffer, USER_SECTOR_BYTE_LEN, adminKey, iv, adminPlaintext);
       
-   //printf("disk key hash from given disk key in admin text: ");
-   //printHex(possDiskKeyHash, DISKKEY_HASH_SIZE);
-
-      
-   numUsers = (uint64_t *) (possPlaintext + KEY_BYTE_LEN + 8);
+   numUsers = (uint64_t *) (adminPlaintext + KEY_BYTE_LEN + 8);
    printf("creation num users: %ld\n", *numUsers);
 
    // //Create a key for the user in this disk.
