@@ -16,6 +16,12 @@
 #define USER_SECTOR_BYTE_LEN 80
 #define MAX_USERS 49
 
+void handleErrors(void)
+{
+  ERR_print_errors_fp(stderr);
+  abort();
+}
+
 /*Found at openssl wiki*/
 int encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
   unsigned char *iv, unsigned char *ciphertext)
@@ -129,7 +135,7 @@ int mountDisk(char * filename, int nBytes) {
    unsigned char *salt = "264722680";
    uint64_t numUsers = 1;
    char *adminpsswd = "admin";
-   char *adminIV;
+   char *adminIV = "1234567890123456";
 
    if (nBytes % BLOCKSIZE != 0) {
       return -1;
@@ -157,7 +163,7 @@ int mountDisk(char * filename, int nBytes) {
       PKCS5_PBKDF2_HMAC(diskKey, KEY_BYTE_LEN, salt, strlen(salt), ITERATIONS, EVP_sha512(), DISKKEY_HASH_SIZE, diskKeyHash);
 
       //Concatenate the disk key with the number of users to get the admin sector.
-      adminSector = (char *) malloc(sizeof(char) * 72);
+      adminSector = (char *) malloc(sizeof(char) * (KEY_BYTE_LEN + 8));
       memcpy(adminSector, diskKey, KEY_BYTE_LEN);
       memcpy(adminSector + KEY_BYTE_LEN, &numUsers, sizeof(uint64_t));
 
@@ -167,8 +173,8 @@ int mountDisk(char * filename, int nBytes) {
 
       //Create the admin cipher for the sector.
       adminCipher = (char *) malloc(sizeof(char) * USER_SECTOR_BYTE_LEN);
-      adminIV = (char *) calloc(IV_BYTE_LEN, sizeof(char));
-      encrypt(adminSector, 72, adminKey, adminIV, adminCipher);
+      //adminIV = (char *) calloc(IV_BYTE_LEN, sizeof(char));
+      encrypt(adminSector, KEY_BYTE_LEN + 8, adminKey, adminIV, adminCipher);
 
       //Write header and random values to the disk.
       fp = fopen(filename, "w+");
@@ -207,7 +213,7 @@ int verifyUser(char *uname, char *password, int disk) {
    char *possDiskKeyHash = malloc(sizeof(char) * DISKKEY_HASH_SIZE);
    int i, j, verified = 1;
    char *userKey;
-   char *iv = malloc(sizeof(char) * IV_BYTE_LEN);
+   char *iv = "1234567890123456";//calloc(IV_BYTE_LEN, sizeof(char));
    uint64_t blockNum, byteNum;
    unsigned char *salt = "264722680";
 
@@ -225,6 +231,17 @@ int verifyUser(char *uname, char *password, int disk) {
    fread(userBuffer, 1, USER_SECTOR_BYTE_LEN, fp);
 
    if(strcmp(uname, "admin") == 0) {
+      decrypt(userBuffer, USER_SECTOR_BYTE_LEN, userKey, iv, possPlaintext);
+      PKCS5_PBKDF2_HMAC(possPlaintext, KEY_BYTE_LEN, salt, strlen(salt), ITERATIONS, EVP_sha512(), DISKKEY_HASH_SIZE, possDiskKeyHash);
+
+
+
+      for(j = 0; j < DISKKEY_HASH_SIZE; j++) {
+            verified = verified && (possDiskKeyHash[j] == diskKeyHash[j]);
+            printf("cur verified: %d\n", verified);
+      }
+      
+      return verified; 
 
    }
    else {
@@ -286,4 +303,19 @@ int writeBlock(int disk, int bNum, void *block, char * uname, char * password) {
 
    
 
+}
+
+int main() {
+   int disk;
+   int verified;
+
+   disk = mountDisk("test.disk", 4096 * 4);
+
+   printf("disk num: %d\n", disk);
+
+   verified = verifyUser("admin", "admin", disk);
+
+   printf("user verified? %d\n", verified);
+
+   return 0;
 }
