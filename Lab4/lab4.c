@@ -112,7 +112,7 @@ int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key,
   return plaintext_len;
 }
 
-char* disks[MAX_DISKS];
+char* disks[MAX_DISKS] = {0};
 int numDisks = 0;
 
 int hasDisk(char *filename) {
@@ -123,6 +123,18 @@ int hasDisk(char *filename) {
       }
    }
    return -1;
+}
+
+int hasDiskNum(int disk) {
+   if(disk > MAX_DISKS) {
+      return -1;
+   }
+   else if(disks[disk] == NULL) {
+      return -1;
+   }
+   else {
+      return 1;
+   }
 }
 
 /* This function opens a regular file and designates the first nBytes 
@@ -232,10 +244,10 @@ int mountDisk(char * filename, int nBytes) {
 
 /* This function unmounts the open disk (identified by ‘disk’). */
 int unmountDisk(int disk) {
-   disks[disk] = 0;
+   disks[disk] = NULL;
 }
 
-int verifyUser(char *uname, char *password, int disk) {
+int verifyUser(char *uname, char *password, int disk, char *returnDiskKey) {
    FILE *fp;
    char *diskKeyHash;
    char *userBuffer;
@@ -287,6 +299,9 @@ int verifyUser(char *uname, char *password, int disk) {
             //printf("cur verified: %d\n", verified);
       }
 
+      if(returnDiskKey != NULL) {
+         memcpy(returnDiskKey, possPlaintext, KEY_BYTE_LEN);
+      }
       fclose(fp);
       return verified; 
 
@@ -319,6 +334,9 @@ int verifyUser(char *uname, char *password, int disk) {
          //verified = verified && (strcmp(possPlaintext + KEY_BYTE_LEN, uname) == 0);
 
          if(verified) {
+            if(returnDiskKey != NULL) {
+               memcpy(returnDiskKey, possPlaintext, KEY_BYTE_LEN);
+            }
             fclose(fp);
             return verified;
          }
@@ -343,7 +361,42 @@ int verifyUser(char *uname, char *password, int disk) {
  operation. You should define your own error code system. 
 */
 int readBlock(int disk, int bNum, void *block, char * uname, char * password) {
+   char *key = (char *) malloc(sizeof(char) * KEY_BYTE_LEN);
+   char *cipherBlock = (char *) malloc(sizeof(char) * BLOCKSIZE);
+   long diskSize;
+   FILE *fp;
+   uint64_t blockNum;
+   uint64_t byteNum;
+   char *iv = (char *) malloc(sizeof(char) * IV_BYTE_LEN);
 
+   if(!verifyUser(uname, password, disk, key)) {
+      return -1;
+   }
+
+   if(!hasDiskNum(disk)) {
+      return -1;
+   }
+
+   fp = fopen(disks[disk], "r");
+   fseek(fp, 0L, SEEK_END);
+   diskSize = ftell(fp);
+
+   if(bNum * BLOCKSIZE > diskSize) {
+      return -1;
+   }
+
+   blockNum = bNum;
+   byteNum = blockNum * BLOCKSIZE;
+
+   memcpy(iv, &blockNum, sizeof(uint64_t));
+   memcpy(iv + 8, &byteNum, sizeof(uint64_t));
+
+   fseek(fp, byteNum + BLOCKSIZE, SEEK_SET);
+   fread(cipherBlock, 1, BLOCKSIZE, fp);
+
+   decrypt(cipherBlock, BLOCKSIZE, key, iv, block);
+
+   fclose(fp);
    return 0;
 }
 
@@ -355,10 +408,50 @@ int readBlock(int disk, int bNum, void *block, char * uname, char * password) {
  define your own error code system. 
 */
 int writeBlock(int disk, int bNum, void *block, char * uname, char * password) {
+   char *key = (char *) malloc(sizeof(char) * KEY_BYTE_LEN);
+   char *cipherBlock = (char *) malloc(sizeof(char) * BLOCKSIZE);
+   char *decryptBlock = (char *) malloc(sizeof(char) * BLOCKSIZE);
+   long diskSize;
+   int size;
 
+   FILE *fp;
+   uint64_t blockNum;
+   uint64_t byteNum;
+   char *iv = (char *) malloc(sizeof(char) * IV_BYTE_LEN);
 
-   
+   if(!verifyUser(uname, password, disk, key)) {
+      return -1;
+   }
 
+   if(!hasDiskNum(disk)) {
+      return -1;
+   }
+
+   fp = fopen(disks[disk], "r+");
+   fseek(fp, 0L, SEEK_END);
+   diskSize = ftell(fp);
+
+   if(bNum * BLOCKSIZE > diskSize) {
+      return -1;
+   }
+
+   blockNum = bNum;
+   byteNum = blockNum * BLOCKSIZE;
+
+   memcpy(iv, &blockNum, sizeof(uint64_t));
+   memcpy(iv + 8, &byteNum, sizeof(uint64_t));
+
+   size = encrypt(block, BLOCKSIZE, key, iv, cipherBlock);
+   decrypt(cipherBlock, BLOCKSIZE, key, iv, decryptBlock);
+
+   printf("%s\n", decryptBlock);
+   printf("size: %d\n", size);
+
+   fseek(fp, byteNum + BLOCKSIZE, SEEK_SET);
+   fwrite(cipherBlock, 1, BLOCKSIZE, fp);
+
+   fclose(fp);
+   return 0;
 }
 
 int creatUser(int disk, char * uname, char * password, char * adminpsswd) {
@@ -374,7 +467,7 @@ int creatUser(int disk, char * uname, char * password, char * adminpsswd) {
    char *iv = "1234567890123456";
    uint64_t *numUsers;
 
-   if(!verifyUser("admin", adminpsswd, disk)) {
+   if(!verifyUser("admin", adminpsswd, disk, NULL)) {
 
       return -1;
    }
@@ -436,6 +529,9 @@ int creatUser(int disk, char * uname, char * password, char * adminpsswd) {
 int main() {
    int disk;
    int verified;
+   char text[BLOCKSIZE];
+   int writeFlag;
+   char *readText = (char *) malloc(sizeof(char) * BLOCKSIZE);
 
    disk = mountDisk("test2.disk", 4096 * 4);
    creatUser(disk, "sally", "5678", "admin");
@@ -444,17 +540,33 @@ int main() {
 
    printf("disk num: %d\n", disk);
 
-   verified = verifyUser("admin", "admin", disk);
+   verified = verifyUser("admin", "admin", disk, NULL);
 
    printf("user verified? %d\n", verified);
 
-   verified = verifyUser("bob", "1234", disk);
+   verified = verifyUser("bob", "1234", disk, NULL);
 
    printf("user verified? %d\n", verified);   
 
-   verified = verifyUser("sally", "5678", disk);
+   verified = verifyUser("sally", "5678", disk, NULL);
 
    printf("user verified? %d\n", verified);   
+
+   int i;
+   for (i = 0; i < BLOCKSIZE; i+= 4)
+   {
+      text[i] = 'H';
+      text[i+1] = 'i';
+      text[i+2] = '!';
+      text[i+3] = '!';
+   }
+   text[BLOCKSIZE-1] = '\0';
+   writeFlag = writeBlock(0, 2, text, "bob", "1234");
+   printf("writeFlag: %d\n", writeFlag);
+
+   writeFlag = readBlock(0, 2, readText, "bob", "1234");
+   printf("readFlag: %d\n", writeFlag);
+   printf("%s\n", readText);
 
    return 0;
 }
