@@ -158,7 +158,7 @@ int mountDisk(char * filename, int nBytes) {
    uint64_t filler = 0;
    uint64_t numUsers = 1;
    char *adminpsswd = "admin";
-   char *adminIV = "1234567890123456";
+   char *adminIV = calloc(IV_BYTE_LEN, sizeof(char));
    int size;
 
    if (nBytes % BLOCKSIZE != 0) {
@@ -256,7 +256,7 @@ int verifyUser(char *uname, char *password, int disk, char *returnDiskKey) {
    int i, j, verified = 1;
    char *userKey;
    uint64_t *numUsers;
-   char *iv = "1234567890123456";//calloc(IV_BYTE_LEN, sizeof(char));
+   char *iv = calloc(IV_BYTE_LEN, sizeof(char));
    uint64_t blockNum, byteNum;
    unsigned char *salt = "264722680";
 
@@ -312,8 +312,8 @@ int verifyUser(char *uname, char *password, int disk, char *returnDiskKey) {
          blockNum = i + 1;
          byteNum = blockNum * USER_SECTOR_BYTE_LEN;
 
-         //memcpy(iv, &blockNum, (IV_BYTE_LEN)/2);
-         //memcpy(iv + (IV_BYTE_LEN/2), &byteNum, (IV_BYTE_LEN)/2);
+         memcpy(iv, &blockNum, (IV_BYTE_LEN)/2);
+         memcpy(iv + (IV_BYTE_LEN/2), &byteNum, (IV_BYTE_LEN)/2);
 
          fread(userBuffer, 1, USER_SECTOR_BYTE_LEN, fp);
          decrypt(userBuffer, USER_SECTOR_BYTE_LEN  , userKey, iv, possPlaintext);
@@ -464,8 +464,9 @@ int creatUser(int disk, char * uname, char * password, char * adminpsswd) {
    char *plain;
    char *newUserKey, *newUserPlain, *newUserCipher, *hashedUserName;
    unsigned char *salt = "264722680";
-   char *iv = "1234567890123456";
-   uint64_t *numUsers;
+   char *iv = (char *) malloc(sizeof(char) * IV_BYTE_LEN);
+   char *adminIV = (char *) malloc(sizeof(char) *IV_BYTE_LEN);
+   uint64_t *numUsers, bNum, byteNum;
 
    if(!verifyUser("admin", adminpsswd, disk, NULL)) {
 
@@ -482,13 +483,24 @@ int creatUser(int disk, char * uname, char * password, char * adminpsswd) {
    diskKeyHash = (char *) malloc(sizeof(char) * DISKKEY_HASH_SIZE);
    fread(diskKeyHash, 1, DISKKEY_HASH_SIZE, fp);
 
+   bNum = 0;
+   byteNum = bNum * USER_SECTOR_BYTE_LEN;
+   memcpy(adminIV, &bNum, sizeof(uint64_t));
+   memcpy(adminIV + 8, &byteNum, sizeof(uint64_t));
+
    // Read in the admin ciphertext and decrypt it
    adminBuffer = (char *) malloc(sizeof(char) * USER_SECTOR_BYTE_LEN);
    fread(adminBuffer, 1, USER_SECTOR_BYTE_LEN, fp);
-   decrypt(adminBuffer, USER_SECTOR_BYTE_LEN, adminKey, iv, adminPlaintext);
+   decrypt(adminBuffer, USER_SECTOR_BYTE_LEN, adminKey, adminIV, adminPlaintext);
 
    // Get the number of users and update it
    numUsers = (uint64_t *) (adminPlaintext + KEY_BYTE_LEN + 8);
+   
+   bNum = *numUsers;
+   byteNum = bNum * USER_SECTOR_BYTE_LEN;
+   memcpy(iv, &bNum, sizeof(uint64_t));
+   memcpy(iv + 8, &byteNum, sizeof(uint64_t));
+
    printf("creation num users: %ld\n", *numUsers);
    (*numUsers)++;
    printf("new num users: %ld\n", *numUsers);
@@ -496,7 +508,7 @@ int creatUser(int disk, char * uname, char * password, char * adminpsswd) {
 
    // Update the admin ciphertext with the new number of users 
    newAdminCipherText = (char *) malloc(sizeof(char) * USER_SECTOR_BYTE_LEN);
-   encrypt(adminPlaintext, USER_SECTOR_BYTE_LEN, adminKey, iv, newAdminCipherText);
+   encrypt(adminPlaintext, USER_SECTOR_BYTE_LEN, adminKey, adminIV, newAdminCipherText);
 
    // Write the new admin ciphetext to the disk
    fseek(fp, DISKKEY_HASH_SIZE, SEEK_SET);
