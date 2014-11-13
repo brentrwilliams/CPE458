@@ -378,53 +378,50 @@ int creatUser(int disk, char * uname, char * password, char * adminpsswd) {
 
    fp = fopen(disks[disk], "r");
 
+   // Get the disk key hash
    diskKeyHash = (char *) malloc(sizeof(char) * DISKKEY_HASH_SIZE);
    fread(diskKeyHash, 1, DISKKEY_HASH_SIZE, fp);
-   //printf("disk key hash from file: ");
-   //printHex(diskKeyHash, DISKKEY_HASH_SIZE);
 
+   // Read in the admin ciphertext and decrypt it
    adminBuffer = (char *) malloc(sizeof(char) * USER_SECTOR_BYTE_LEN);
    fread(adminBuffer, 1, USER_SECTOR_BYTE_LEN, fp);
    decrypt(adminBuffer, USER_SECTOR_BYTE_LEN, adminKey, iv, adminPlaintext);
-      
+
+   // Get the number of users and update it
    numUsers = (uint64_t *) (adminPlaintext + KEY_BYTE_LEN + 8);
    printf("creation num users: %ld\n", *numUsers);
-
-   // //Create a key for the user in this disk.
-   // adminKey = (char *) malloc(sizeof(char) * KEY_BYTE_LEN);
-   // PKCS5_PBKDF2_HMAC(adminpsswd, strlen(adminpsswd), salt, strlen(salt), ITERATIONS, EVP_sha512(), KEY_BYTE_LEN, adminKey);   
-
-   // plain = (char *) malloc(sizeof(char) * USER_SECTOR_BYTE_LEN);
-   // decrypt(userBuffer, USER_SECTOR_BYTE_LEN, adminKey, iv, plain);
-
-   // numUsers = (uint64_t *) (plain + KEY_BYTE_LEN + 8);
-   // printf("num users!! %ld\n", *numUsers);
-
-   // (*numUsers) ++;
-
+   (*numUsers)++;
+   printf("new num users: %ld\n", *numUsers);
+   memcpy(adminPlaintext + KEY_BYTE_LEN + 8, numUsers, sizeof(uint64_t));
    
+   // Update the admin ciphertext with the new number of users 
+   newAdminCipherText = (char *) malloc(sizeof(char) * USER_SECTOR_BYTE_LEN);
+   encrypt(adminPlaintext, USER_SECTOR_BYTE_LEN, adminKey, iv, newAdminCipherText);
 
-   // memcpy(plain + KEY_BYTE_LEN + 8, numUsers, sizeof(uint64_t));
+   // Write the new admin ciphetext to the disk
+   fseek(fp, DISKKEY_HASH_SIZE, SEEK_SET);
+   fwrite(newAdminCipherText, 1, USER_SECTOR_BYTE_LEN, fp);
 
-   // newAdminCipherText = (char *) malloc(sizeof(char) * USER_SECTOR_BYTE_LEN);
-   // encrypt(plain, USER_SECTOR_BYTE_LEN, adminKey, iv, newAdminCipherText);
+   // Create the new user's key
+   newUserKey = (char *) malloc(sizeof(char) * KEY_BYTE_LEN);
+   PKCS5_PBKDF2_HMAC(password, strlen(password), salt, strlen(salt), ITERATIONS, EVP_sha512(), KEY_BYTE_LEN, newUserKey);   
 
-   // newUserKey = (char *) malloc(sizeof(char) * KEY_BYTE_LEN);
-   // PKCS5_PBKDF2_HMAC(password, strlen(password), salt, strlen(salt), ITERATIONS, EVP_sha512(), KEY_BYTE_LEN, newUserKey);   
+   // Get the user name hashed
+   hashedUserName = (char *) malloc(sizeof(char) * 16);
+   PKCS5_PBKDF2_HMAC(uname, strlen(uname), salt, strlen(salt), ITERATIONS, EVP_sha512(), 16, hashedUserName);   
 
-   // fseek(fp, ((*numUsers) - 2) * USER_SECTOR_BYTE_LEN, SEEK_CUR);
+   // Create the new user's plaintext
+   newUserPlain = (char *) malloc(sizeof(char) * USER_SECTOR_BYTE_LEN);
+   memcpy(newUserPlain, adminPlaintext, KEY_BYTE_LEN);
+   memcpy(newUserPlain + KEY_BYTE_LEN, hashedUserName, 16);
 
-   // hashedUserName = (char *) malloc(sizeof(char) * 16);
-   // PKCS5_PBKDF2_HMAC(uname, strlen(uname), salt, strlen(salt), ITERATIONS, EVP_sha512(), 16, hashedUserName);   
+   // Create the new user's ciphertext
+   newUserCipher = (char *) malloc(sizeof(char) * USER_SECTOR_BYTE_LEN);
+   encrypt(newUserPlain, USER_SECTOR_BYTE_LEN, newUserKey, iv, newUserCipher);
 
-   // newUserPlain = (char *) malloc(sizeof(char) * USER_SECTOR_BYTE_LEN);
-   // memcpy(newUserPlain, plain, KEY_BYTE_LEN);
-   // memcpy(newUserPlain + KEY_BYTE_LEN, hashedUserName, 16);
-
-   // newUserCipher = (char *) malloc(sizeof(char) * USER_SECTOR_BYTE_LEN);
-   // encrypt(newUserPlain, USER_SECTOR_BYTE_LEN, newUserKey, iv, newUserCipher);
-
-   // fwrite(newUserCipher, 1, USER_SECTOR_BYTE_LEN, fp);
+   // Write the new user's ciphertext to their user sector on the disk
+   fseek(fp, ((*numUsers) - 2) * USER_SECTOR_BYTE_LEN, SEEK_CUR);
+   fwrite(newUserCipher, 1, USER_SECTOR_BYTE_LEN, fp);
 
    fclose(fp);
 }
