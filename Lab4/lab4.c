@@ -293,6 +293,7 @@ int verifyUser(char *uname, char *password, int disk) {
    }
    else {
       for(i = 0; i < MAX_USERS; i++) {
+         verified = 1;
          blockNum = i + 1;
          byteNum = blockNum * USER_SECTOR_BYTE_LEN;
 
@@ -301,12 +302,18 @@ int verifyUser(char *uname, char *password, int disk) {
 
          fread(userBuffer, 1, USER_SECTOR_BYTE_LEN, fp);
          decrypt(userBuffer, USER_SECTOR_BYTE_LEN  , userKey, iv, possPlaintext);
-
          
          PKCS5_PBKDF2_HMAC(possPlaintext, KEY_BYTE_LEN, salt, strlen(salt), ITERATIONS, EVP_sha512(), DISKKEY_HASH_SIZE, possDiskKeyHash);
 
+         /*printf("actual key: ");
+         printHex(diskKeyHash, DISKKEY_HASH_SIZE);
+         printf("possib key: ");
+         printHex(possDiskKeyHash, DISKKEY_HASH_SIZE);
+         printf("\n");*/
+
          for(j = 0; j < DISKKEY_HASH_SIZE; j++) {
             verified = verified && (possDiskKeyHash[j] == diskKeyHash[j]);
+            //printf("verified: %d\n", verified);
          }
 
          //verified = verified && (strcmp(possPlaintext + KEY_BYTE_LEN, uname) == 0);
@@ -376,7 +383,7 @@ int creatUser(int disk, char * uname, char * password, char * adminpsswd) {
    adminKey = (char *) malloc(sizeof(char) * KEY_BYTE_LEN);
    PKCS5_PBKDF2_HMAC(adminpsswd, strlen(adminpsswd), salt, strlen(salt), ITERATIONS, EVP_sha512(), KEY_BYTE_LEN, adminKey);   
 
-   fp = fopen(disks[disk], "r");
+   fp = fopen(disks[disk], "r+");
 
    // Get the disk key hash
    diskKeyHash = (char *) malloc(sizeof(char) * DISKKEY_HASH_SIZE);
@@ -393,7 +400,7 @@ int creatUser(int disk, char * uname, char * password, char * adminpsswd) {
    (*numUsers)++;
    printf("new num users: %ld\n", *numUsers);
    memcpy(adminPlaintext + KEY_BYTE_LEN + 8, numUsers, sizeof(uint64_t));
-   
+
    // Update the admin ciphertext with the new number of users 
    newAdminCipherText = (char *) malloc(sizeof(char) * USER_SECTOR_BYTE_LEN);
    encrypt(adminPlaintext, USER_SECTOR_BYTE_LEN, adminKey, iv, newAdminCipherText);
@@ -431,7 +438,9 @@ int main() {
    int verified;
 
    disk = mountDisk("test2.disk", 4096 * 4);
+   creatUser(disk, "sally", "5678", "admin");
    creatUser(disk, "bob", "1234", "admin");
+   
 
    printf("disk num: %d\n", disk);
 
@@ -440,6 +449,10 @@ int main() {
    printf("user verified? %d\n", verified);
 
    verified = verifyUser("bob", "1234", disk);
+
+   printf("user verified? %d\n", verified);   
+
+   verified = verifyUser("sally", "5678", disk);
 
    printf("user verified? %d\n", verified);   
 
