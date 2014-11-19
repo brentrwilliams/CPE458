@@ -2,8 +2,6 @@ from CryptoUtils import LetterFrequencies, index_of_coincidence, index_to_char, 
 import math
 import CaesarCipher
 
-from pycipher import Vigenere
-
 def create_tableau():
    alphabet = "abcdefghijklmnopqrstuvwxyz"
    tableau = []
