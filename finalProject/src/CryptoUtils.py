@@ -99,6 +99,7 @@ class NGramScorer(object):
             line = line.strip()
             ngram, part, num = line.partition(' ')
             num = int(num)
+            ngram = ngram.lower()
             self.ngrams[ngram] = num
             count += num
 
@@ -115,7 +116,9 @@ class NGramScorer(object):
 
       for i in range(0,len(text)-self.n+1):
          ngram = text[i:i+self.n]
+         #print ngram
          if ngram in self.ngrams:
+            #print "yes!"
             score += self.ngrams[ngram] 
          else:
             score += self.floor
