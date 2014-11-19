@@ -5,6 +5,7 @@ def encrypt(plaintext, key):
 
    plaintext = "".join(plaintext.splitlines())
    plaintext = "".join(plaintext.split(" "))
+   plaintext = plaintext.lower()
 
    for x in range(0, key):
       ciphertext.append("")
@@ -23,7 +24,6 @@ def encrypt(plaintext, key):
    return "".join(ciphertext)
 
 
-#modified 
 def decrypt(ciphertext, key):
    plaintext = [''] * len(ciphertext)
    cipherTextInd = 0
