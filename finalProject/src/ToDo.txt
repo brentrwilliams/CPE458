@@ -1,0 +1,5 @@
+ToDo:
+- Deal with vigenere cipher mess-ups
+   - Do analysis to see if any of the caesar cipher get_best_key has keys that are within a standard of deviation of the best key you found
+   - Include those as the return value 
+   - Try all combos of the return values with ngram analysis and return the best one
