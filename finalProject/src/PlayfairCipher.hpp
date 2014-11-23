@@ -16,7 +16,7 @@ class PlayfairCipher
       char* bestKey;
       float bestScore;
 
-      PlayfairCipher(const char* bestKey, float bestScore);
+      PlayfairCipher(const char* bestKey, float bestScore, const char* ciphertext);
       ~PlayfairCipher();
       char* decrypt(char* ciphertext, const char* key);
       void simulateAnnealing();

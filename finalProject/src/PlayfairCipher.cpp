@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "PlayfairCipher.hpp"
+#include "QuadGramScorer.hpp"
 
 using namespace std;
 
@@ -12,17 +13,20 @@ char getCharFromKey(int i, int j, const char* key)
    return key[i*5 + j];
 }
 
-PlayfairCipher::PlayfairCipher(const char* bestKey, float bestScore)
+PlayfairCipher::PlayfairCipher(const char* bestKey, float bestScore, const char* ciphertext)
 {
    this->bestScore = bestScore;
    this->bestKey = new char [KEY_STR_SIZE];
    strcpy(this->bestKey, bestKey);
+   this->ciphertext = new char [strlen(ciphertext)];
+   strcpy(this->ciphertext, ciphertext);
 }
 
 
 PlayfairCipher::~PlayfairCipher()
 {
    delete[] bestKey;
+   delete[] ciphertext;
 }
 
 
@@ -83,10 +87,9 @@ void decodeLetterPair(char* oldPair, char* newPair, const char* key)
 }
 
 
-char* PlayfairCipher::decrypt(char* ciphertext, const char* key)
+void PlayfairCipher::decrypt(char* ciphertext, char* plaintext, const char* key)
 {
    int textLen = strlen(ciphertext);
-   char* plaintext = new char[textLen];
    char oldPair[3], newPair[3];
    oldPair[2] = 0;
    newPair[2] = 0;
@@ -97,18 +100,21 @@ char* PlayfairCipher::decrypt(char* ciphertext, const char* key)
       oldPair[1] = ciphertext[i+1];
       decodeLetterPair(oldPair, newPair, key);
 
-      cout << oldPair << " -> " << newPair << endl;
-
       plaintext[i] = newPair[0];
       plaintext[i+1] = newPair[1];
    }
-
-   return plaintext;
 }
 
 
 void PlayfairCipher::simulateAnnealing()
 {
+   int textLen = strlen(ciphertext);
+   char maxKey[KEY_SIZE];
+   char* plaintext = new char[textLen];
+   QuadGramScorer qgs();
+   
+   strcpy(maxKey,bestKey);
+   plaintext = decrypt(ciphertext,maxKey);
 
 }
 
@@ -134,20 +140,15 @@ int main(int argc, char const *argv[])
    char ciphertext[] = "ugrmkcsxhmufmkbtoxgcmvatluiv";
 
    PlayfairCipher pfc(bestKey, bestScore);
-   
-   // char oldPair[] = "pv";
-   // char newPair[3];
-   // newPair[2] = '\0';
-   // decodeLetterPair(oldPair,newPair,bestKey);
-   // cout << oldPair << " -> " << newPair << endl;
-
-   printKeySquare(bestKey);
-   
-   char* plaintext = pfc.decrypt(ciphertext,bestKey);
-   cout << "ciphertext:\t" << ciphertext << endl;
-   cout << "decrypted:\t" << plaintext << endl << endl;
    pfc.simulateAnnealing();
    cout << pfc  << endl;
+
+
+   // printKeySquare(bestKey);
+   
+   // char* plaintext = pfc.decrypt(ciphertext,bestKey);
+   // cout << "ciphertext:\t" << ciphertext << endl;
+   // cout << "decrypted:\t" << plaintext << endl << endl;
 
    return 0;
 }
