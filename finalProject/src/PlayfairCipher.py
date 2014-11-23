@@ -1,3 +1,6 @@
+from CryptoUtils import NGramScorer
+from math import exp
+import random
 
 def getKeySquare(key):
    keySquare = [
@@ -134,22 +137,187 @@ def decrypt(ciphertext, key):
    return ''.join(decryptedLetterPairs)
 
 
+def decryptWithKeySquare(ciphertext, keySquare):
+   '''
+   ciphertext is the ciphertext in ASCII
+   '''
+   letterPairs = []
+   for i in range(0, len(ciphertext), 2):
+      letterPairs.append(ciphertext[i:i+2])
+   
+   decryptedLetterPairs = []
+   for letterPair in letterPairs:
+      decryptedLetterPairs.append(decodeLetterPair(letterPair,keySquare))
+
+   return ''.join(decryptedLetterPairs)
+
+
+def swap2Rows(key):
+   i = random.randint(0,4)
+   j = random.randint(0,4)
+
+   while i == j:
+      j = random.randint(0,4)
+
+   row1 = key[i]
+   row2 = key[j]
+
+   key[i] = row2
+   key[j] = row1
+
+   return key
+
+
+def swap2Cols(key):
+   i = random.randint(0,4)
+   j = random.randint(0,4)
+
+   while i == j:
+      j = random.randint(0,4)
+   
+   for x in xrange(0,len(key)):
+      temp = key[x][i]
+      key[x][i] = key[x][j]
+      key[x][j] = temp
+
+   return key
+
+
+def swapRows(key):
+   key.reverse()
+   return key
+
+
+def swapCols(key):
+   for x in xrange(0,len(key)):
+      temp = key[x][0]
+      key[x][0] = key[x][4]
+      key[x][4] = temp
+
+      temp = key[x][1]
+      key[x][1] = key[x][3]
+      key[x][3] = temp
+
+   return key
+
+
+def reverseKey(key):
+   newKey = [
+         ['*','*','*','*','*'], 
+         ['*','*','*','*','*'],
+         ['*','*','*','*','*'],
+         ['*','*','*','*','*'],
+         ['*','*','*','*','*']
+      ]
+   for i in range(0,25):
+      newI = 24 - i
+      newKey[i//5][i%5] = key[newI//5][newI%5]
+
+   return newKey
+
+
+def swapLetters(key):
+   randNum1 = random.randint(0,24)
+   randNum2 = random.randint(0,24)
+
+   while randNum1 == randNum2:
+      randNum2 = random.randint(0,24)
+
+   i1 = randNum1 // 5
+   j1 = randNum1 % 5
+
+   i2 = randNum2 // 5
+   j2 = randNum2 % 5
+
+   temp = key[i1][j1]
+   key[i1][j1] = key[i2][j2]
+   key[i2][j2] = temp
+
+   return key
+
+
+def modifyKey(key):
+   newKey = []
+   i = random.randint(0,49)
+   if i == 0:
+      newKey = swap2Rows(key)
+   elif i == 1:
+      newKey = swap2Cols(key)
+   elif i == 2:
+      newKey = swapRows(key)
+   elif i == 3:
+      newKey = swapCols(key)
+   elif i == 4:
+      newKey = reverseKey(key)
+   else:
+      newKey = swapLetters(key)
+   
+   return newKey
+
+
 def crack(ciphertext):
    '''
    decrypt a ciphertext encrypted with a playfair cipher and an unknown key
    ciphertext is the ciphertext in ASCII
    '''
-   pass
+   print 'Cracking ciphertext...'
+   # Parameters that can be tuned
+   TEMP = 20
+   STEP = 0.2
+   COUNT = 1000
+
+   bestKey = getKeySquare('a') 
+   maxKey = bestKey
+   deciphered = decryptWithKeySquare(ciphertext, maxKey)
+   quadgramScorer = NGramScorer(4)
+   maxScore = quadgramScorer.score(deciphered)
+   bestScore = maxScore
+
+   t = TEMP
+   while t >= 0:
+      for c in xrange(0, COUNT):
+         testKey = modifyKey(maxKey)
+         deciphered = decryptWithKeySquare(ciphertext, testKey)
+         score = quadgramScorer.score(deciphered)
+         dF = score - maxScore
+         
+         if dF >= 0:
+            maxScore = score
+            maxKey = testKey
+         elif t > 0:
+            prob = exp(dF/t)
+            if prob > random.uniform(0.0,1.0):
+               maxScore = score
+               maxKey = testKey
+
+         if maxScore > bestScore:
+            bestScore = maxScore
+            bestKey = maxKey
+
+      percentage = (TEMP - t) / TEMP
+      print '\t' + str(percentage * 100) + '%'
+      t -= STEP
+
+   return decryptWithKeySquare(ciphertext, bestKey)
 
 
 def main():
-   plaintext = 'we are discovered, save yourself'
-   key = 'monarchy'
+   # plaintext = 'we are discovered, save yourself'
+   # key = 'monarchy'
+   # ciphertext = encrypt(plaintext, key)
+   # crackedPlaintext = decrypt(ciphertext, key)
+   # print 'plaintext: ' + plaintext
+   # print 'ciphertext: ' + ciphertext
+   # print 'cracked plaintex: ' + crackedPlaintext
+   
+   plaintext = 'THEPLAYFAIRCIPHERWASTHEFIRSTPRACTICALDIGRAPHSUBSTITUTIONCIPHERTHESCHEMEWASINVENTEDINBYCHARLESWHEATSTONEBUTWASNAMEDAFTERLORDPLAYFAIRWHOPROMOTEDTHEUSEOFTHECIPHERTHETECHNIQUEXNCRYPTSPAIRSOFLETXERSDIGRAPHSINSTEADOFSINGLELETXERSASINTHESIMPLESUBSTITUTIONCIPHER'
+   key = 'LQDARSUMBNYIOWEVKPFGTXHZC'
    ciphertext = encrypt(plaintext, key)
-   crackedPlaintext = decrypt(ciphertext, key)
+   #crackedPlaintext = crack(ciphertext)
    print 'plaintext: ' + plaintext
    print 'ciphertext: ' + ciphertext
    print 'cracked plaintex: ' + crackedPlaintext
+
 
 
 if __name__ == '__main__':
