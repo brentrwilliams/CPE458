@@ -262,14 +262,11 @@ PlayfairCipher::PlayfairCipher(const char* ciphertext)
 
    strcpy(this->ciphertext, ciphertext);
    strcpy(bestKey, "ABCDEFGHIKLMNOPQRSTUVWXYZ");
-   
-   this->qgs = new QuadGramScorer();
 
    for(int i = 0; i < textLength; i++)
       this->ciphertext[i] = toupper(this->ciphertext[i]);
 
    decrypt(this->ciphertext, plaintext, bestKey);
-   //this->bestScore = qgs->score(plaintext);
    this->bestScore = scoreTextQgram(plaintext, this->textLength);
    free(plaintext);
 }
@@ -278,7 +275,6 @@ PlayfairCipher::PlayfairCipher(const char* ciphertext)
 PlayfairCipher::~PlayfairCipher()
 {
    delete[] ciphertext;
-   delete qgs;
 }
 
 
@@ -316,12 +312,7 @@ void PlayfairCipher::simulateAnnealing()
          strcpy(key, maxKey);
          changeKey(key);
 
-         // cout << "key: "<< endl;
-         // printKeySquare(key);
-         // cout << endl;
-
          decrypt(ciphertext, plaintext, key);
-         //score = qgs->score(plaintext);
          score = scoreTextQgram(plaintext, textLength);
          float scoreDiff = score - maxScore;
          if (scoreDiff >= 0)
@@ -379,13 +370,6 @@ int main(int argc, char const *argv[])
       }
       i++;
    }
-
-   // char bestKey[] = "epyortskwqniluvxbfmghacdz";
-   
-   // char* plaintext = new char[strlen(ciphertext)];
-   // pfc.decrypt(ciphertext, plaintext, bestKey);
-   // cout << "ciphertext:\t" << ciphertext << endl;
-   // cout << "decrypted:\t" << plaintext << endl << endl;
 
    return 0;
 }

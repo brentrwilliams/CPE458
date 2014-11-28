@@ -3,9 +3,8 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
-#include "scoreText.h"
 
-#include "QuadGramScorer.hpp"
+#include "ScoreText.hpp"
 
 #define KEY_STR_SIZE 26
 #define KEY_SIZE 25
@@ -24,7 +23,6 @@ class PlayfairCipher
       char* ciphertext;
       float bestScore;
       int textLength;
-      QuadGramScorer* qgs;
 
       PlayfairCipher(const char* ciphertext);
       ~PlayfairCipher();

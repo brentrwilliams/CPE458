@@ -1,5 +1,5 @@
-#include "scoreText.h"
-#include "qgr.h"
+#include "ScoreText.hpp"
+#include "QGR.hpp"
 
 extern float qgrams[];
 
