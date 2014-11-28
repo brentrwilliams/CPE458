@@ -1,4 +1,11 @@
 #include <iostream>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <math.h>
+#include "scoreText.h"
+
+#include "QuadGramScorer.hpp"
 
 #define KEY_STR_SIZE 26
 #define KEY_SIZE 25
@@ -14,11 +21,14 @@ class PlayfairCipher
 {
    public:
       char* bestKey;
+      char* ciphertext;
       float bestScore;
+      int textLength;
+      QuadGramScorer* qgs;
 
-      PlayfairCipher(const char* bestKey, float bestScore, const char* ciphertext);
+      PlayfairCipher(const char* ciphertext);
       ~PlayfairCipher();
-      char* decrypt(char* ciphertext, const char* key);
+      void decrypt(const char* ciphertext, char* plaintext, const char* key) const;
       void simulateAnnealing();
-      friend ostream &operator<<(ostream &output, const PlayfairCipher &pfc);
+      void outputState();
 };

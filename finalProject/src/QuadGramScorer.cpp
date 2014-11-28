@@ -44,7 +44,7 @@ void QuadGramScorer::loadQuadGramStatistics()
 }
 
 
-float QuadGramScorer::score(string text)
+float QuadGramScorer::score(std::string text)
 {
    float score = 0.0f;
    std::transform(text.begin(), text.end(), text.begin(), ::tolower);
@@ -54,7 +54,6 @@ float QuadGramScorer::score(string text)
       if (ngrams->find(quadGram) != ngrams->end())
       {
          score += (*ngrams)[quadGram];
-         cout << quadGram << ": " << (*ngrams)[quadGram] << endl;
       }
       else
       {
@@ -65,12 +64,12 @@ float QuadGramScorer::score(string text)
 }
 
 
-int main(int argc, char const *argv[])
-{
-   QuadGramScorer qgs;
+// int main(int argc, char const *argv[])
+// {
+//    QuadGramScorer qgs;
 
-   string text = "ATTACKTHEEASTWALLOFTHECASTLEATDAWN";
-   cout << qgs.score(text) << endl;
+//    string text = "ATSKVLXPPBVESHESUIBKATASLNFESZITUTTIMBLORESTANEOUTWHUTINURSTOMATNEYFYENUBKUOOZDWHEUODSYFERETUFESIFFEINUPHWQKWOFWHEAFEDBLCYVGVLXPPBUIPCSZNSTOHEATEMENSCATHISHESRIESEDYFOUAELICERCRTQNPBEQSCETHTOMQILORESTONOWEDIXSCONCIETETHTOMKBONDWESONSOETANEOUTWHUTINURSTOM";
+//    cout << qgs.score(text) << endl;
 
-   return 0;
-}
+//    return 0;
+// }

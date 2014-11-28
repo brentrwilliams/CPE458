@@ -126,10 +126,12 @@ class NGramScorer(object):
 
 
 def main():
-   ct = 'aoljhlzhyjpwolypzvulvmaollhysplzaruvduhukzptwslzajpwolyzpapzhafwlvmzbizapabapvujpwolypudopjolhjoslaalypuaolwshpualeapzzopmalkhjlyahpuubtilyvmwshjlzkvduaolhswohila'
-   lf = LetterFrequencies(ct)
-   print lf.letter_frequencies
-   print lf.chi_squared()
+   # ct = 'aoljhlzhyjpwolypzvulvmaollhysplzaruvduhukzptwslzajpwolyzpapzhafwlvmzbizapabapvujpwolypudopjolhjoslaalypuaolwshpualeapzzopmalkhjlyahpuubtilyvmwshjlzkvduaolhswohila'
+   # lf = LetterFrequencies(ct)
+   # print lf.letter_frequencies
+   # print lf.chi_squared()
+   qgs = NGramScorer(4)
+   print qgs.score('ATSKVLXPPBVESHESUIBKATASLNFESZITUTTIMBLORESTANEOUTWHUTINURSTOMATNEYFYENUBKUOOZDWHEUODSYFERETUFESIFFEINUPHWQKWOFWHEAFEDBLCYVGVLXPPBUIPCSZNSTOHEATEMENSCATHISHESRIESEDYFOUAELICERCRTQNPBEQSCETHTOMQILORESTONOWEDIXSCONCIETETHTOMKBONDWESONSOETANEOUTWHUTINURSTOM'.lower())
 
 
 if __name__ == '__main__':
