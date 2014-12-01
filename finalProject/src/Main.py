@@ -6,6 +6,15 @@ import VigenereCipher
 from CryptoUtils import LetterFrequencies, index_of_coincidence, NGramScorer
 import random
 
+class Cipher(object):
+   RAIL_FENCE = 0
+   SIMPLE_SUB = 1
+   PLAYFAIR = 2
+   VIGENERE = 3
+   CAESAR = 4
+      
+
+
 def preprocessText(text):
    alphabet = 'abcdefghijklmnopqrstuvwxyz'
    text = text.lower()
@@ -50,31 +59,27 @@ def isSubstitution(ciphertext):
    print ioc
 
    return ioc < 0.067 + epsilon and ioc > 0.067 - epsilon
-      
 
-def main():
-   plaintext = 'Carsten Egeberg Borchgrevink was an Anglo Norwegian polar explorer and a pioneer of modern Antarctic travel. He was the precursor of Robert Falcon Scott, Ernest Shackleton, Roald Amundsen and other more famous names associated with the Heroic Age of Antarctic Exploration. In some year, he led the British financed Southern Cross Expedition, which established a new Farthest South record'
-   
-   plaintext = preprocessText(plaintext)
 
-   num = 2#random.randint(0, 4)
+def randomEncrypt(plaintext):
+   cipher = random.randint(0, 4)
    ciphertext = ""
 
-   if num == 0:
+   if cipher == Cipher.RAIL_FENCE:
       print "Encrypting with RailFence"
       railFenceKey = random.randint(2, len(plaintext)/2)
       ciphertext = RailFenceCipher.encrypt(plaintext, railFenceKey)
-   elif num == 1:
+   elif cipher == Cipher.SIMPLE_SUB:
       print "Encrypting with SimpleSubCipher"
       alph = list("abcdefghijklmnopqrstuvwxyz")
       random.shuffle(alph)
       subKey = "".join(alph)
       ciphertext = SimpleSubCipher.encrypt(plaintext, subKey)
-   elif num == 2:
+   elif cipher == Cipher.PLAYFAIR:
       print "Encrypting with PlayfairCipher"
       playFairkKey = 'ZMDCFQRNOEGHIKLWXBYAUVPST'
       ciphertext = PlayfairCipher.encrypt(plaintext, playFairkKey)
-   elif num == 3:
+   elif cipher == Cipher.VIGENERE:
       print "Encrypting with VigenereCipher"
       vigenereKey = "fjdklafjdklghjak"
       ciphertext = VigenereCipher.encrypt(plaintext, vigenereKey)
@@ -83,8 +88,13 @@ def main():
       caesarKey = random.randint(1, 25)
       ciphertext = CaesarCipher.encrypt(plaintext, caesarKey)
 
+   return (ciphertext, cipher)
 
 
+def main():
+   plaintext = 'Carsten Egeberg Borchgrevink was an Anglo Norwegian polar explorer and a pioneer of modern Antarctic travel. He was the precursor of Robert Falcon Scott, Ernest Shackleton, Roald Amundsen and other more famous names associated with the Heroic Age of Antarctic Exploration. In some year, he led the British financed Southern Cross Expedition, which established a new Farthest South record'
+   plaintext = preprocessText(plaintext)
+   ciphertext, cipher = randomEncrypt(plaintext)
    ciphertext = preprocessText(ciphertext)
    print "ciphertext: " + ciphertext
 
