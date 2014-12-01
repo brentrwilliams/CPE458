@@ -38,6 +38,26 @@ class LetterFrequencies(object):
    def __repr__(self):
       return str(self.letter_frequency_percentages)
 
+   def find_letter_frequency_map(self, letter, used):
+      freq_per = self.letter_frequency_percentages[letter]
+
+      bestLetter = ""
+      bestSub = 100000000
+
+      for key, value in self.expected_letter_frequency_percentages.items():
+         #print key + ": " + str(value)
+         sub = abs(freq_per - value)
+         #print "sub: " + str(sub) + " vs bestSUb: " + str(bestSub)
+         if sub < bestSub and used.find(key) == -1:
+            #print "good!: " + key + ": " + str(value)
+            #print letter + str(freq_per)
+            bestSub = sub
+            bestLetter = key
+
+      return bestLetter
+
+
+
    def chi_squared(self):
       '''
       This method measures how close the given letter frequency probability distribution is to english's letter frequency probability distribution using the Chi-squared Statistic. The Chi-squared Statistic is a measure of how similar two categorical probability distributions are. If the two distributions are identical, the chi-squared statistic is 0, if the distributions are very different, some higher number will result. 
