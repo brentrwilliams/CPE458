@@ -272,7 +272,7 @@ def crack(ciphertext):
 
 def main():
    plaintext = '''Carsten Egeberg Borchgrevink was an Anglo Norwegian polar explorer and a pioneer of modern Antarctic travel. He was the precursor of Robert Falcon Scott, Ernest Shackleton, Roald Amundsen and other more famous names associated with the Heroic Age of Antarctic Exploration. In some year, he led the British financed Southern Cross Expedition, which established a new Farthest South record'''
-   key = 'ZBCDEFGHIKLMNOPQRSTUVWXYA'
+   key = 'ZMDCFQRNOEGHIKLWXBYAUVPST'
    ciphertext = encrypt(plaintext, key)
    
    crackedPlaintext = crack(ciphertext)
