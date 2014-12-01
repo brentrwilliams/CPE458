@@ -47,7 +47,6 @@ def processPlaintext(plaintext):
    '''
    Process the plaintext to return a list of the plaintext broken into letter pairs
    '''
-   print plaintext
 
    # Remove non-alphabetic characters
    updatedPlaintext = ''

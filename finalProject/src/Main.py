@@ -1,8 +1,38 @@
 import RailFenceCipher
 import SimpleSubCipher
-from CryptoUtils import LetterFrequencies, index_of_coincidence
+import PlayfairCipher
+import CaesarCipher
+import VigenereCipher
+from CryptoUtils import LetterFrequencies, index_of_coincidence, NGramScorer
+import random
 
-def checkIfRail(ciphertext):
+def preprocessText(text):
+   alphabet = 'abcdefghijklmnopqrstuvwxyz'
+   text = text.lower()
+   newText = ''
+   for char in text:
+      if char in alphabet:
+         newText += char
+   return newText
+
+
+def isPlayfair(ciphertext):
+   letters = 'abcdefghijklmnopqrstuvwxyz'
+   letterCounts = {}
+   for letter in letters:
+      letterCounts[letter] = 0
+
+   for letter in ciphertext:
+      letterCounts[letter] += 1
+
+   numNonZero = 0
+   for letter in letters:
+      if letterCounts[letter] > 0:
+         numNonZero += 1
+
+   return (letterCounts['j'] == 0 and numNonZero == 25)
+
+def isRail(ciphertext):
    epsilon = 1
    letter_freqs = LetterFrequencies(ciphertext)
    chi = letter_freqs.chi_squared()
@@ -10,36 +40,86 @@ def checkIfRail(ciphertext):
    #print chi
    #print ciphertext
 
-   if chi < 0 + epsilon and chi > 0 - epsilon:
-      return True
+   return chi < 0 + epsilon and chi > 0 - epsilon
+      
 
-   return False
-
-def checkIfSubstitution(ciphertext):
+def isSubstitution(ciphertext):
    epsilon = 0.005
 
    ioc = index_of_coincidence(ciphertext)
    print ioc
 
-   if ioc < 0.06 + epsilon and ioc > 0.06 - epsilon:
-      return True
-
-   return False
-
-
+   return ioc < 0.067 + epsilon and ioc > 0.067 - epsilon
+      
 
 def main():
-   text = "hello my name is drew aNd i Am going to decrypt this message i hope it works because this is getting really annoying and i want this to work very badly please program do this for me the world depends on it and i want it to work hello my name is drew aNd i Am going to decrypt this message i hope it works because this is getting really annoying and i want this to work very badly please program do this for me the world depends on it and i want it to work"
-   #text = '''Most of the production will take place in Montreal, where the studio is currently ramping up its feature animation team to work on Charming and subsequent productions. These first films will allow us to build infrastructure, a team, pipeline and so on, says Butler. It will help us make the feature animation studio we want to be. At the same time, were also going to start to go out and develop our own scripts for our movies. And theyll be ones we own more of going forward.
-#In terms of animation style, Butler plans to maintain a visual effects quality to the work. Were very ambitious about the quality, he says. I want to capitalize on the high production values we instituted on Beans and then keep it in the box. In VFX you typically have to be a lot more agile, but I learnt my craft at Disney and I feel like we can manage them in a similar way. We want to be successful  make good looking films and make more than one.
-#Cinesite will continue to work in visual effects  upcoming projects include The Man From U.N.C.L.E. and San Andreas, for example  but this work will run alongside animated features. Id love to do a feature length version of Beans, admits Butler when asked about future plans, who also notes that the studio also plans on accepting scripts and developing ideas for films.'''
+   plaintext = 'Carsten Egeberg Borchgrevink was an Anglo Norwegian polar explorer and a pioneer of modern Antarctic travel. He was the precursor of Robert Falcon Scott, Ernest Shackleton, Roald Amundsen and other more famous names associated with the Heroic Age of Antarctic Exploration. In some year, he led the British financed Southern Cross Expedition, which established a new Farthest South record'
+   
+   plaintext = preprocessText(plaintext)
 
-   #cipher = RailFenceCipher.encrypt(text, 3)
-   cipher = SimpleSubCipher.encrypt(text, "qwertyuiopasdfghjklzxcvbnm")
-   print checkIfRail(cipher)
-   print checkIfSubstitution(cipher)
+   num = 2#random.randint(0, 4)
+   ciphertext = ""
 
-   pass
+   if num == 0:
+      print "Encrypting with RailFence"
+      railFenceKey = random.randint(2, len(plaintext)/2)
+      ciphertext = RailFenceCipher.encrypt(plaintext, railFenceKey)
+   elif num == 1:
+      print "Encrypting with SimpleSubCipher"
+      alph = list("abcdefghijklmnopqrstuvwxyz")
+      random.shuffle(alph)
+      subKey = "".join(alph)
+      ciphertext = SimpleSubCipher.encrypt(plaintext, subKey)
+   elif num == 2:
+      print "Encrypting with PlayfairCipher"
+      playFairkKey = 'ZMDCFQRNOEGHIKLWXBYAUVPST'
+      ciphertext = PlayfairCipher.encrypt(plaintext, playFairkKey)
+   elif num == 3:
+      print "Encrypting with VigenereCipher"
+      vigenereKey = "fjdklafjdklghjak"
+      ciphertext = VigenereCipher.encrypt(plaintext, vigenereKey)
+   else:
+      print "Encrypting with CaesarCipher"
+      caesarKey = random.randint(1, 25)
+      ciphertext = CaesarCipher.encrypt(plaintext, caesarKey)
+
+
+
+   ciphertext = preprocessText(ciphertext)
+   print "ciphertext: " + ciphertext
+
+   if isRail(ciphertext):
+      print "Predicting it is RailFence"
+      newplain = RailFenceCipher.crack(ciphertext)
+      print "plaintext: " + newplain
+   elif isSubstitution(ciphertext):
+      print "Predicting it is a Substitution cipher"
+
+      digram = NGramScorer(2)
+      trigram = NGramScorer(3)
+      quadgram = NGramScorer(4)
+
+      simpleSubPlain = SimpleSubCipher.crack(ciphertext)
+      caesarPlain = CaesarCipher.crack(ciphertext)
+
+      simpleScore = digram.score(simpleSubPlain) + trigram.score(simpleSubPlain) + quadgram.score(simpleSubPlain)
+      caesarScore = digram.score(caesarPlain) + trigram.score(caesarPlain) + quadgram.score(caesarPlain)
+
+      if simpleScore > caesarScore:
+         print "Predicting it is simple substitution"
+         print "plaintext: " + simpleSubPlain
+      else:
+         print "Predicting it is caesar"
+         print "plaintext: " + caesarPlain
+
+   elif isPlayfair(ciphertext):
+      print "Predicting it is the PlayFair"
+      newplain = PlayfairCipher.crack(ciphertext)
+      print "plaintext: " + newplain
+   else:
+      print "Predicting it is Vigenere"
+      newplain = VigenereCipher.crack(ciphertext)
+      print "plaintext: " + newplain
 
 if __name__ == '__main__':
    main()
