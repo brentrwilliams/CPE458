@@ -29,4 +29,5 @@ class PlayfairCipher
       void decrypt(const char* ciphertext, char* plaintext, const char* key) const;
       void simulateAnnealing();
       void outputState();
+      void outputBestPlaintext();
 };

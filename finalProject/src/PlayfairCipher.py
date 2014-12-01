@@ -1,6 +1,7 @@
 from CryptoUtils import NGramScorer
 from math import exp
 import random
+from subprocess import Popen, PIPE
 
 def getKeySquare(key):
    keySquare = [
@@ -46,6 +47,8 @@ def processPlaintext(plaintext):
    '''
    Process the plaintext to return a list of the plaintext broken into letter pairs
    '''
+   print plaintext
+
    # Remove non-alphabetic characters
    updatedPlaintext = ''
    for char in plaintext.lower():
@@ -260,60 +263,19 @@ def crack(ciphertext):
    decrypt a ciphertext encrypted with a playfair cipher and an unknown key
    ciphertext is the ciphertext in ASCII
    '''
-   print 'Cracking ciphertext...'
-   # Parameters that can be tuned
-   TEMP = 20
-   STEP = 0.2
-   COUNT = 1000
+   print '\nCracking ciphertext...'
+   maxRounds = 100 
+   plaintext = Popen(["./a.out", ciphertext, str(maxRounds), 'v'], stdout=PIPE).communicate()[0]
 
-   bestKey = getKeySquare('a') 
-   maxKey = bestKey
-   deciphered = decryptWithKeySquare(ciphertext, maxKey)
-   quadgramScorer = NGramScorer(4)
-   maxScore = quadgramScorer.score(deciphered)
-   bestScore = maxScore
-
-   t = TEMP
-   while t >= 0:
-      for c in xrange(0, COUNT):
-         testKey = modifyKey(maxKey)
-         deciphered = decryptWithKeySquare(ciphertext, testKey)
-         score = quadgramScorer.score(deciphered)
-         dF = score - maxScore
-         
-         if dF >= 0:
-            maxScore = score
-            maxKey = testKey
-         elif t > 0:
-            prob = exp(dF/t)
-            if prob > random.uniform(0.0,1.0):
-               maxScore = score
-               maxKey = testKey
-
-         if maxScore > bestScore:
-            bestScore = maxScore
-            bestKey = maxKey
-
-      percentage = (TEMP - t) / TEMP
-      print '\t' + str(percentage * 100) + '%'
-      t -= STEP
-
-   return decryptWithKeySquare(ciphertext, bestKey)
+   return plaintext
 
 
 def main():
-   # plaintext = 'we are discovered, save yourself'
-   # key = 'monarchy'
-   # ciphertext = encrypt(plaintext, key)
-   # crackedPlaintext = decrypt(ciphertext, key)
-   # print 'plaintext: ' + plaintext
-   # print 'ciphertext: ' + ciphertext
-   # print 'cracked plaintex: ' + crackedPlaintext
-   
-   plaintext = 'THEPLAYFAIRCIPHERWASTHEFIRSTPRACTICALDIGRAPHSUBSTITUTIONCIPHERTHESCHEMEWASINVENTEDINBYCHARLESWHEATSTONEBUTWASNAMEDAFTERLORDPLAYFAIRWHOPROMOTEDTHEUSEOFTHECIPHERTHETECHNIQUEXNCRYPTSPAIRSOFLETXERSDIGRAPHSINSTEADOFSINGLELETXERSASINTHESIMPLESUBSTITUTIONCIPHER'
-   key = 'LQDARSUMBNYIOWEVKPFGTXHZC'
+   plaintext = '''Carsten Egeberg Borchgrevink was an Anglo Norwegian polar explorer and a pioneer of modern Antarctic travel. He was the precursor of Robert Falcon Scott, Ernest Shackleton, Roald Amundsen and other more famous names associated with the Heroic Age of Antarctic Exploration. In some year, he led the British financed Southern Cross Expedition, which established a new Farthest South record'''
+   key = 'ZBCDEFGHIKLMNOPQRSTUVWXYA'
    ciphertext = encrypt(plaintext, key)
-   #crackedPlaintext = crack(ciphertext)
+   
+   crackedPlaintext = crack(ciphertext)
    print 'plaintext: ' + plaintext
    print 'ciphertext: ' + ciphertext
    print 'cracked plaintex: ' + crackedPlaintext

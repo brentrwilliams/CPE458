@@ -343,33 +343,68 @@ void PlayfairCipher::simulateAnnealing()
 
 void PlayfairCipher::outputState()
 {
-   cout << "key: " << bestKey << endl; 
+   cerr << "key: " << bestKey << endl; 
    char* plaintext = new char[textLength];
    decrypt(ciphertext, plaintext, bestKey);
-   cout << "Plaintext:\n" << plaintext << endl;
+   cerr << "Plaintext:\n" << plaintext << endl;
+   delete[] plaintext;
+}
+
+void PlayfairCipher::outputBestPlaintext()
+{
+   char* plaintext = new char[textLength];
+   decrypt(ciphertext, plaintext, bestKey);
+   cout << plaintext;
 }
 
 
 int main(int argc, char const *argv[])
 {
-   char ciphertext[] = "XZOGQRWVQWNROKCOAELBXZWGEQYLGDRZXYZRQAEKLRHDUMNUXYXSXYEMXEHDGNXZYNTZONYELBEUGYSCOREUSWTZRLRYBYCOLZYLEMWNSXFBUSDBORBZCYLQEDMHQRWVQWAEDPGDPOYHORXZINNYWPXZGROKCOLCCOCYTZUEUIICERLEVHMVQWLNWPRYXHGNMLEKLRHDUYSUCYRAWPUYECRYRYXHGNBLUYSCCOUYOHRYUMNUXYXSXYEMXEHDGN";
-   int i = 1;
-   float lastScore;
+   
 
+   if (argc < 3)
+   {
+      cerr << "\nERROR: Invalid number of arguments: Found " << argc-1 << ", expected 2 (or 3)." << endl;
+      cerr << "\t" << argv[0] << " CIPHERTEXT NUM_ROUNDS [v]" << endl;
+      return 1;
+   }
+
+   int verbose = 0;
+   if (argc >= 4)
+   {
+      verbose = 1;
+   }
+
+   const char* ciphertext = argv[1];
+   // "XZOGQRWVQWNROKCOAELBXZWGEQYLGDRZXYZRQAEKLRHDUMNUXYXSXYEMXEHDGNXZYNTZONYELBEUGYSCOREUSWTZRLRYBYCOLZYLEMWNSXFBUSDBORBZCYLQEDMHQRWVQWAEDPGDPOYHORXZINNYWPXZGROKCOLCCOCYTZUEUIICERLEVHMVQWLNWPRYXHGNMLEKLRHDUYSUCYRAWPUYECRYRYXHGNBLUYSCCOUYOHRYUMNUXYXSXYEMXEHDGN";
+   int maxUnchangedRounds = atoi(argv[2]);
+
+   int i = 1;
+   int lastChangedRound = i;
+   float bestScore;
    PlayfairCipher pfc(ciphertext);
-   lastScore = pfc.bestScore;
-   while(true)
+   bestScore = pfc.bestScore;
+
+
+   while(i - lastChangedRound < maxUnchangedRounds)
    {
       pfc.simulateAnnealing();
-      if (pfc.bestScore > lastScore)
+      if (pfc.bestScore > bestScore)
       {
-         cout << "Round " << i << ":" << pfc.bestScore << endl << endl;
-         pfc.outputState();
-         cout << endl << endl;
-         lastScore = pfc.bestScore;
+         if (verbose)
+         {
+            cerr << "Round " << i << ":" << pfc.bestScore << endl << endl;
+            pfc.outputState();
+            cerr << endl << endl;
+         }
+
+         bestScore = pfc.bestScore;
+         lastChangedRound = i;
       }
       i++;
    }
+
+   pfc.outputBestPlaintext();
 
    return 0;
 }
