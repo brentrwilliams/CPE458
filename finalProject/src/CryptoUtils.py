@@ -64,8 +64,8 @@ class LetterFrequencies(object):
       '''
       chi_squared_val = 0
       for char in self.letter_frequencies.keys():
-         expected = self.expected_letter_frequency_percentages[char] * self.num_letters
-         actual = self.letter_frequencies[char]
+         expected = self.expected_letter_frequency_percentages[char] #* self.num_letters
+         actual = self.letter_frequency_percentages[char]
 
          chi_squared_val += ((actual - expected) * (actual - expected)) / expected
 
