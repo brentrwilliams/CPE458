@@ -110,7 +110,7 @@ def crack(ciphertext):
    best_plaintext = ''
 
    periods = get_periods(ciphertext)
-   print 'Possible periods: ' + str(periods)
+   #print 'Possible periods: ' + str(periods)
 
    period = periods[0]
    stripped_ciphertext = [char.lower() for char in ciphertext if char.isalpha()]
@@ -123,7 +123,7 @@ def crack(ciphertext):
       #print 'Calculated Key: ' + key[-1]
       #print ''
 
-   print key
+   #print key
 
    best_plaintext = decrypt(ciphertext,key)
 

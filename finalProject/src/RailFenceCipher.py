@@ -69,12 +69,12 @@ def crack(ciphertext):
       possplain = decrypt(ciphertext, key)
       #print possplain
       score = quadgramScorer.score(possplain) + bigramScorer.score(possplain) + trigramScorer.score(possplain)
-      print "score for key " + str(key) + " is: " + str(score)
+      #print "score for key " + str(key) + " is: " + str(score)
       if score > maxScore:
          maxScore = score
          bestKey = key
 
-   print bestKey
+   #print bestKey
    return decrypt(ciphertext, bestKey)
 
 
