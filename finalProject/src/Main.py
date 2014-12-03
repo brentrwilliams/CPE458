@@ -146,12 +146,18 @@ def generateStats(text, numTests, length):
       ciphertext, cipher, decryptedtext = randomEncrypt(plain)
       newplain, crackcipher = crackCipherText(ciphertext)
 
+      #print newplain
+      #print decryptedtext
+      #print cipher
+      #print crackcipher
+
       if newplain == decryptedtext and cipher == crackcipher:
          numCorrect += 1
+         print "yay!"
 
       print "Done with test " + str(x) + " of 100 for length" + str(length)
 
-   return numCorrect / numTests * 100.0
+   return float(numCorrect) / numTests * 100.0
 
 
 
