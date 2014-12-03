@@ -99,6 +99,9 @@ def get_periods(ciphertext):
    # Sort by smallest period
    significant_periods.sort()
 
+   if len(significant_periods) == 0;
+      significant_periods.append(5)
+
    return significant_periods
 
 
