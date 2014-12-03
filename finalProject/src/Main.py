@@ -152,6 +152,12 @@ def getPercentCorrect(plain, expected):
 def generateStats(text, numTests, length):
    numCorrect = 0
    totPercentCorrect = 0
+   totPercentCorrectWithCorrectCipher = 0
+   numReadable = 0
+   totVig = 0; totSS = 0; totRail = 0; totCaesar = 0; totPlay = 0
+   numVig = 0; numSS = 0; numRail = 0; numCaesar = 0; numPlay = 0
+
+
    statsFile = open(str(length) + ".txt", "w+")
 
    for x in range(0, numTests):
@@ -175,11 +181,40 @@ def generateStats(text, numTests, length):
       if cipher == crackcipher:
          numCorrect += 1
 
+         if cipher == Cipher.VIGENERE:
+            totVig += percentCorrect
+            numVig += 1
+         elif cipher == Cipher.SIMPLE_SUB:
+            totSS += percentCorrect
+            numSS += 1
+         elif cipher == Cipher.PLAYFAIR:
+            totPlay += percentCorrect
+            numPlay += 1
+         elif cipher == Cipher.CAESAR:
+            totCaesar += percentCorrect
+            numCaesar += 1
+         else:
+            totRail += percentCorrect
+            numRail += 1
+
+         totPercentCorrectWithCorrectCipher += percentCorrect
+      if percentCorrect > 75.0:
+         numReadable += 1
+
+
       print "Done with test " + str(x) + " of 100 for length" + str(length)
 
-   statsFile.write("==========================TOTAL BREAKDOWN\n==========================\n")
-   statsFile.write("Percent Correct Chosen Cipher: " + str(float(numCorrect) / numTests * 100.0))
-   statsFile.write("Average Accuracy (Percent): " + str(float(totPercentCorrect) / numTests))
+   statsFile.write("==========================\nTOTAL BREAKDOWN\n==========================\n")
+   statsFile.write("Percent Correct Chosen Cipher: " + str(float(numCorrect) / numTests * 100.0) + "\n")
+   statsFile.write("Average Accuracy (Percent): " + str(float(totPercentCorrect) / numTests) + "\n")
+   statsFile.write("Average Accuracy When Choosing Correct Cipher: " + str(float(totPercentCorrectWithCorrectCipher) / numCorrect) + "\n")
+   statsFile.write("Percent Readable (75% Accurate): " + str(float(numReadable) / numTests * 100.0) + "\n\n")
+   
+   statsFile.write("Average Accuracy of RailFence: " + str(float(totRail) / numRail) + "\n")
+   statsFile.write("Average Accuracy of SimpleSub: " + str(float(totSS) / numSS) + "\n")
+   statsFile.write("Average Accuracy of Caesar: " + str(float(totCaesar) / numCaesar) + "\n")
+   statsFile.write("Average Accuracy of Vigenere: " + str(float(totVig) / numVig) + "\n")
+   statsFile.write("Average Accuracy of PlayFair: " + str(float(totPlay) / numPlay) + "\n")
 
    statsFile.close()
 
@@ -193,7 +228,7 @@ def main():
 
    plaintext = preprocessText(textOfFile)
 
-   for x in range(250, 99, -100):
+   for x in range(100, 99, -100):
       print "working on stats for length " + str(x)
       percentCorrect = generateStats(plaintext, 100, x)
       print "Stats for message length " + str(x) + ": " + str(percentCorrect) + " accuracy"
