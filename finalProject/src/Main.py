@@ -62,7 +62,7 @@ def isSubstitution(ciphertext):
 
 
 def randomEncrypt(plaintext):
-   cipher = random.randint(0, 3)
+   cipher = random.randint(0, 4)
    ciphertext = ""
    decryptedtext = ""
 
