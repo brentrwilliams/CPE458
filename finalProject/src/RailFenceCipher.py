@@ -30,8 +30,6 @@ def decrypt(ciphertext, key):
    plaintext = [''] * len(ciphertext)
    cipherTextInd = 0
 
-
-
    for line in xrange(0, key):
       if line == key - 1:
          skip = 2 *(key - 1)

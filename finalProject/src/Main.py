@@ -138,27 +138,50 @@ def crackCipherText(ciphertext):
       newplain = VigenereCipher.crack(ciphertext)
       return (newplain, Cipher.VIGENERE)
 
+def getPercentCorrect(plain, expected):
+
+   count = 0
+
+   for x in range(0, len(plain)):
+      if plain[x] == expected[x]:
+         count += 1
+
+   return float(count) / len(plain) * 100.0
+
+
 def generateStats(text, numTests, length):
    numCorrect = 0
+   totPercentCorrect = 0
+   statsFile = open(str(length) + ".txt", "w+")
 
    for x in range(0, numTests):
       plain = getRandText(text, length)
       ciphertext, cipher, decryptedtext = randomEncrypt(plain)
       newplain, crackcipher = crackCipherText(ciphertext)
 
-      #print newplain
-      #print decryptedtext
-      #print cipher
-      #print crackcipher
+      print newplain
+      print decryptedtext
+      print cipher
+      print crackcipher
 
-      if newplain == decryptedtext and cipher == crackcipher:
+      percentCorrect = getPercentCorrect(newplain, decryptedtext)
+      totPercentCorrect += percentCorrect
+
+
+      statsFile.write("checking string " + str(x) + " of " + str(numTests) + "\n")
+      statsFile.write("    Correct Cipher: " + str(cipher == crackcipher) + "\n")
+      statsFile.write("    Percent Plaintext Correct: " + str(percentCorrect) + "\n\n")
+
+      if cipher == crackcipher:
          numCorrect += 1
-         print "yay!"
 
       print "Done with test " + str(x) + " of 100 for length" + str(length)
 
-   return float(numCorrect) / numTests * 100.0
+   statsFile.write("==========================TOTAL BREAKDOWN\n==========================\n")
+   statsFile.write("Percent Correct Chosen Cipher: " + str(float(numCorrect) / numTests * 100.0))
+   statsFile.write("Average Accuracy (Percent): " + str(float(totPercentCorrect) / numTests))
 
+   statsFile.close()
 
 
 def main():
@@ -170,7 +193,7 @@ def main():
 
    plaintext = preprocessText(textOfFile)
 
-   for x in range(1000, 99, -100):
+   for x in range(250, 99, -100):
       print "working on stats for length " + str(x)
       percentCorrect = generateStats(plaintext, 100, x)
       print "Stats for message length " + str(x) + ": " + str(percentCorrect) + " accuracy"
