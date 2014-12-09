@@ -1,0 +1,14 @@
+Black Box Historical Cipher Program
+CPE 458 Final Project
+Brent Williams and Drew Schulz
+
+Requirements:
+   g++
+   Python 2
+   Make
+
+To Build:
+   make
+
+To Run:
+   python Main.py

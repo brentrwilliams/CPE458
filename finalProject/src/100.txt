@@ -1,0 +1,24 @@
+checking string 0 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 1 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 96.0
+
+checking string 2 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 15.0
+
+checking string 3 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 4 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 57.0
+
+checking string 5 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 89.0
+

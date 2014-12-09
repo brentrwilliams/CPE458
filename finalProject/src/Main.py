@@ -5,6 +5,7 @@ import CaesarCipher
 import VigenereCipher
 from CryptoUtils import LetterFrequencies, index_of_coincidence, NGramScorer
 import random
+import time
 
 class Cipher(object):
    RAIL_FENCE = 0
@@ -138,12 +139,13 @@ def crackCipherText(ciphertext):
       newplain = VigenereCipher.crack(ciphertext)
       return (newplain, Cipher.VIGENERE)
 
+
 def getPercentCorrect(plain, expected):
 
    count = 0
 
    for x in range(0, len(plain)):
-      if plain[x] == expected[x]:
+      if plain[x].lower() == expected[x].lower():
          count += 1
 
    return float(count) / len(plain) * 100.0
@@ -170,7 +172,7 @@ def generateStats(text, numTests, length):
       print cipher
       print crackcipher
 
-      percentCorrect = getPercentCorrect(newplain, decryptedtext)
+      percentCorrect = getPercentCorrect(newplain.lower(), decryptedtext)
       totPercentCorrect += percentCorrect
 
 
@@ -218,28 +220,191 @@ def generateStats(text, numTests, length):
 
    statsFile.close()
 
-
-def main():
+def getResponseToMenu():
+   print '       MENU       '
+   print '=================='
+   print 'Encrypt:        1'
+   print 'Decrypt:        2'
+   print 'Crack:          3'
+   print 'Run Statistics: 4'
+   print 'Quit:           Q'
+   print ''
    
-   textOfFile = ""
+   answer = raw_input('What would you like to do: ')
+   answer = answer.strip()
+   print ''
+   return answer
 
+
+def encryptUserInput():
+   cipherName = {
+      '1':'Rail Fence',
+      '2':'Simple Substitution',
+      '3':'Caesar',
+      '4':'Vigenere',
+      '5':'PlayFair',
+   }
+
+   keyInstructions = {
+      '1':'Keys for the Rail Fence Cipher can be integers from 2 to half the length of the plaintext.',
+      '2':'Keys for the Simple Substitution Cipher are a jumbled alphabet.',
+      '3':'Keys for the Caesar Cipher can be an integer in the range [1,25].',
+      '4':'Keys for the Vigenere Cipher can be any alphabetic text.',
+      '5':'Keys for the Playfair Cipher are a jumbled alphabet without the letter \'J\'',
+   }
+
+   cipherEncryptMap = {
+      '1':RailFenceCipher.encrypt,
+      '2':SimpleSubCipher.encrypt,
+      '3':CaesarCipher.encrypt,
+      '4':VigenereCipher.encrypt,
+      '5':PlayfairCipher.encrypt,
+   }
+
+   print '        CIPHERS'
+   print '======================'
+   print 'Rail Fence:          1'
+   print 'Simple Substitution: 2'
+   print 'Caesar:              3'
+   print 'Vigenere:            4'
+   print 'PlayFair:            5'
+
+   answer = raw_input('What cipher would you like to encrypt with? ')
+   answer = answer.strip()
+   
+   if answer in cipherName:
+      encrypt = cipherEncryptMap[answer]
+      print ''
+      print 'Thank you for choosing the ' + cipherName[answer] + ' cipher'
+      print ''
+      print keyInstructions[answer]
+      key = raw_input('Please enter a key: ')
+
+      if answer == '1' or answer == '3':
+         key = int(key)
+      else:
+         key = preprocessText(key)
+
+      plaintext = raw_input('Please enter the plaintext you would like to encrypt: ')
+      plaintext = preprocessText(plaintext)
+      print ''
+      print 'Your encrypted plaintext is the following:'
+      print encrypt(plaintext, key)
+
+   else:
+      print 'Invalid input'
+   
+   print ''
+   return
+
+
+def decryptUserInput():
+   cipherName = {
+      '1':'Rail Fence',
+      '2':'Simple Substitution',
+      '3':'Caesar',
+      '4':'Vigenere',
+      '5':'PlayFair',
+   }
+
+   cipherDecryptMap = {
+      '1':RailFenceCipher.decrypt,
+      '2':SimpleSubCipher.decrypt,
+      '3':CaesarCipher.decrypt,
+      '4':VigenereCipher.decrypt,
+      '5':PlayfairCipher.decrypt,
+   }
+
+   print '        CIPHERS'
+   print '======================'
+   print 'Rail Fence:          1'
+   print 'Simple Substitution: 2'
+   print 'Caesar:              3'
+   print 'Vigenere:            4'
+   print 'PlayFair:            5'
+
+   answer = raw_input('What cipher would you like to decrypt with? ')
+   answer = answer.strip()
+
+   if answer in cipherName:
+      decrypt = cipherDecryptMap[answer]
+      print ''
+      print 'Thank you for choosing the ' + cipherName[answer] + ' cipher'
+      print ''
+      ciphertext = raw_input('Please enter the ciphertext you would like to decrypt: ')
+      ciphertext = preprocessText(ciphertext)
+
+      key = raw_input('Please enter a key: ')
+      if answer == '1' or answer == '3':
+         key = int(key)
+      else:
+         key = preprocessText(key)
+
+      print ''
+      print 'Your decrypted ciphertext is the following:'
+      print decrypt(ciphertext, key)
+   else:
+      print 'Invalid input'
+
+   print ''
+   return
+
+
+def crackUserInput():
+   ciphertext = raw_input('Please enter the ciphertext you would like to crack: ')
+   ciphertext = preprocessText(ciphertext)
+   plaintext = crackCipherText(ciphertext)
+
+   print plaintext[0]
+
+
+def runStatistics():
    with open("InputText.txt", "r") as myFile:
       textOfFile = myFile.read()
 
    plaintext = preprocessText(textOfFile)
 
-   for x in range(100, 99, -100):
-      print "working on stats for length " + str(x)
+   tests = [100, 150, 250, 500]
+   for x in tests:
+      print "NOTE:"
+      print "- FOR ALL STATS TO BE RUN IT WILL TAKE A FEW HOURS"
+      print "- EACH RESULT WILL NOT BE WRITTEN TO A FILE UNTIL ITS WHOLE TEST HAS COMPLETED"
+      print 'YOU HAVE BEEN WARNED'
+
+      time.sleep(10)
+
+      print ''
+      print "Working on stats for length " + str(x)
+      print "Writing statistical output for this test to " + str(x) + ".py"
+      print ''
+      print ''
+      
       percentCorrect = generateStats(plaintext, 100, x)
       print "Stats for message length " + str(x) + ": " + str(percentCorrect) + " accuracy"
 
 
+def main():
+   answer = getResponseToMenu()
 
-   #plaintext = 'Carsten Egeberg Borchgrevink was an Anglo Norwegian polar explorer and a pioneer of modern Antarctic travel. He was the precursor of Robert Falcon Scott, Ernest Shackleton, Roald Amundsen and other more famous names associated with the Heroic Age of Antarctic Exploration. In some year, he led the British financed Southern Cross Expedition, which established a new Farthest South record'
-   #plaintext = preprocessText(plaintext)
-   #ciphertext, cipher = randomEncrypt(plaintext)
-   #ciphertext = preprocessText(ciphertext)
+   while answer.upper() != 'Q':
+
+      if answer == '1':
+         encryptUserInput()
+      elif answer == '2':
+         decryptUserInput()
+      elif answer == '3':
+         crackUserInput()
+      elif answer == '4':
+         runStatistics()
+      else:
+         print 'Did not understand input...'
+      
+      answer = getResponseToMenu()
+
+
    
+
+
 
 if __name__ == '__main__':
    main()

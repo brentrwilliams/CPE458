@@ -1,0 +1,413 @@
+checking string 0 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 1 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 49.3333333333
+
+checking string 2 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 3 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 4 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 7.33333333333
+
+checking string 5 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 99.3333333333
+
+checking string 6 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 55.3333333333
+
+checking string 7 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 8 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 56.0
+
+checking string 9 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 68.6666666667
+
+checking string 10 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 4.66666666667
+
+checking string 11 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 12 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 2.66666666667
+
+checking string 13 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 8.66666666667
+
+checking string 14 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 7.33333333333
+
+checking string 15 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 56.6666666667
+
+checking string 16 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 17 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 18 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 19 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 20 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 40.0
+
+checking string 21 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 22 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 23 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 24 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 25 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 4.0
+
+checking string 26 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 4.0
+
+checking string 27 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 75.3333333333
+
+checking string 28 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 8.0
+
+checking string 29 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 30 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 9.33333333333
+
+checking string 31 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 32 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 0.666666666667
+
+checking string 33 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 34 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 60.0
+
+checking string 35 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 36 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 2.66666666667
+
+checking string 37 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 99.3333333333
+
+checking string 38 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 39 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 40 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 41 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 98.6666666667
+
+checking string 42 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 43 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 5.33333333333
+
+checking string 44 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 7.33333333333
+
+checking string 45 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 46 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 27.3333333333
+
+checking string 47 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 98.6666666667
+
+checking string 48 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 49 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 4.66666666667
+
+checking string 50 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 90.6666666667
+
+checking string 51 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 10.6666666667
+
+checking string 52 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 9.33333333333
+
+checking string 53 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 80.0
+
+checking string 54 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 71.3333333333
+
+checking string 55 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 93.3333333333
+
+checking string 56 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 57 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 58 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 9.33333333333
+
+checking string 59 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 60 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 3.33333333333
+
+checking string 61 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 62 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 94.0
+
+checking string 63 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 75.3333333333
+
+checking string 64 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 11.3333333333
+
+checking string 65 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 66 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 97.3333333333
+
+checking string 67 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 46.6666666667
+
+checking string 68 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 69 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 76.0
+
+checking string 70 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 96.0
+
+checking string 71 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 98.0
+
+checking string 72 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 7.33333333333
+
+checking string 73 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 70.0
+
+checking string 74 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 76.0
+
+checking string 75 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 6.66666666667
+
+checking string 76 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 77 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 12.0
+
+checking string 78 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 99.3333333333
+
+checking string 79 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 67.3333333333
+
+checking string 80 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 7.33333333333
+
+checking string 81 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 75.3333333333
+
+checking string 82 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 98.0
+
+checking string 83 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 100.0
+
+checking string 84 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 6.0
+
+checking string 85 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 6.0
+
+checking string 86 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 12.0
+
+checking string 87 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 2.66666666667
+
+checking string 88 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 0.666666666667
+
+checking string 89 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 6.66666666667
+
+checking string 90 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 8.66666666667
+
+checking string 91 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 97.3333333333
+
+checking string 92 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 93 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 94 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 8.66666666667
+
+checking string 95 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 96 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 9.33333333333
+
+checking string 97 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 98 of 100
+    Correct Cipher: True
+    Percent Plaintext Correct: 100.0
+
+checking string 99 of 100
+    Correct Cipher: False
+    Percent Plaintext Correct: 2.66666666667
+
+==========================
+TOTAL BREAKDOWN
+==========================
+Percent Correct Chosen Cipher: 63.0
+Average Accuracy (Percent): 62.04
+Average Accuracy When Choosing Correct Cipher: 80.4973544974
+Percent Readable (75% Accurate): 55.0
+
+Average Accuracy of RailFence: 95.2333333333
+Average Accuracy of SimpleSub: 98.8888888889
+Average Accuracy of Caesar: 100.0
+Average Accuracy of Vigenere: 43.568627451
+Average Accuracy of PlayFair: 46.4444444444

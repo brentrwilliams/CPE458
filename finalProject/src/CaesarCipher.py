@@ -5,6 +5,9 @@ def encrypt(plaintext, key):
    plaintext is the plaintext in ASCII
    key is a number 1-25 that shifts the letters
    '''
+   if type(key) == type(''):
+      key = int(key)
+
    ciphertext = ''
    for char in plaintext.lower():
       if char.isalpha():
