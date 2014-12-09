@@ -375,7 +375,7 @@ def runStatistics():
 
       print ''
       print "Working on stats for length " + str(x)
-      print "Writing statistical output for this test to " + str(x) + ".py"
+      print "Writing statistical output for this test to " + str(x) + ".txt"
       print ''
       print ''
       
