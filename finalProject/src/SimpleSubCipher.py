@@ -48,6 +48,7 @@ def decrypt(ciphertext, cipherAlph):
 	plaintext = ciphertext.lower()
 	return plaintext
 
+#Modified from hill climbing algorithm found at Practical Cryptography
 def crack(ctext):
 	fitness = NGramScorer(3)
 	difitness = NGramScorer(2)

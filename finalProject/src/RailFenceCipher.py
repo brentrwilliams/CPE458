@@ -25,7 +25,7 @@ def encrypt(plaintext, key):
 
    return "".join(ciphertext)
 
-
+#Modified from algorithm found at practicalcryptography.com
 def decrypt(ciphertext, key):
    plaintext = [''] * len(ciphertext)
    cipherTextInd = 0
